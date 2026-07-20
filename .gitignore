@@ -1,0 +1,10 @@
+# Zugangsdaten niemals committen
+.env
+.env.local
+.env.*.local
+
+node_modules/
+dist/
+
+# Rohe (nicht geschwärzte) Probe-Ausgaben
+fixtures/raw/
