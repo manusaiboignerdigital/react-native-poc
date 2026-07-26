@@ -139,8 +139,24 @@ async function probeMetadata() {
     if (defs && defs.dynamicLogic) dl.push(entity);
   }
   log(`  Entitäten mit clientDefs.dynamicLogic (A8): ${dl.join(', ') || '(keine)'}`);
-  if (dl.length) saveFixture('dynamic-logic-examples.json',
-    Object.fromEntries(dl.map((e) => [e, data.clientDefs[e].dynamicLogic])));
+  const dlFixture = Object.fromEntries(dl.map((e) => [e, data.clientDefs[e].dynamicLogic]));
+  // Espo 9/10 führt zusätzlich den Top-Level-Key logicDefs — mit sichern.
+  if (data.logicDefs) {
+    dlFixture.__logicDefs = data.logicDefs;
+    log(`  logicDefs vorhanden, Keys: ${Object.keys(data.logicDefs).join(', ') || '(leer)'}`);
+  }
+  if (Object.keys(dlFixture).length) saveFixture('dynamic-logic-examples.json', dlFixture);
+
+  // A8: verwendete Operatoren sammeln — Pflichtliste für den Evaluator (Phase 3)
+  const operators = new Set();
+  (function collect(node) {
+    if (Array.isArray(node)) return node.forEach(collect);
+    if (node && typeof node === 'object') {
+      if (typeof node.type === 'string') operators.add(node.type);
+      Object.values(node).forEach(collect);
+    }
+  })(dlFixture);
+  if (operators.size) log(`  Verwendete conditionGroup-Operatoren: ${[...operators].sort().join(', ')}`);
 
   // Feldtypen-Inventar der Probe-Entitäten
   for (const entity of probeEntities()) {
@@ -150,6 +166,17 @@ async function probeMetadata() {
     for (const def of Object.values(fields)) types[def.type] = (types[def.type] || 0) + 1;
     log(`  Feldtypen ${entity}: ${Object.entries(types).map(([t, n]) => `${t}(${n})`).join(', ')}`);
   }
+
+  // Gesamt-Zensus aller Feldtypen der Instanz — bestimmt den Umfang der
+  // fieldRegistry in Phase 2.
+  const census = {};
+  for (const defs of Object.values(entityDefs)) {
+    for (const def of Object.values(defs.fields || {})) {
+      if (def.type) census[def.type] = (census[def.type] || 0) + 1;
+    }
+  }
+  const ranked = Object.entries(census).sort((a, b) => b[1] - a[1]);
+  log(`  Feldtypen instanzweit: ${ranked.map(([t, n]) => `${t}(${n})`).join(', ')}`);
   return data;
 }
 
@@ -202,7 +229,18 @@ async function probeLayouts() {
 
 async function probeList() {
   log('\n== A5/A6/A7: Listen, Pagination, where auf modifiedAt ==');
-  const entity = probeEntities()[0];
+
+  // Datenreichste Probe-Entität wählen — nur so ist das maxSize-Limit
+  // aussagekräftig testbar.
+  let entity = probeEntities()[0];
+  let best = -1;
+  for (const cand of probeEntities()) {
+    const { res, json } = await api(`${cand}?maxSize=1`, { raw: true });
+    if (!res.ok) { log(`  ${cand}: nicht abrufbar (HTTP ${res.status})`); continue; }
+    log(`  ${cand}: total=${json.total}`);
+    if ((json.total ?? 0) > best) { best = json.total ?? 0; entity = cand; }
+  }
+  log(`  Testentität: ${entity} (${best} Datensätze)`);
 
   // A5: Pagination + orderBy + select
   const params = new URLSearchParams({
@@ -220,10 +258,23 @@ async function probeList() {
         `teamsIds=${'teamsIds' in rec} teamsNames=${'teamsNames' in rec}`);
   }
 
-  // A5: maxSize-Obergrenze testen
-  const { res: bigRes, json: bigJson } = await api(`${entity}?maxSize=500`, { raw: true });
-  if (bigRes.ok) log(`  maxSize=500 akzeptiert, geliefert=${bigJson.list?.length} (Obergrenze beachten)`);
-  else log(`  maxSize=500 -> HTTP ${bigRes.status} ${bigRes.headers.get('X-Status-Reason') || ''} (Obergrenze niedriger)`);
+  // A5: maxSize-Obergrenze per Leiter eintasten. Espo validiert maxSize
+  // serverseitig (HTTP 403 + X-Status-Reason), unabhängig von der Treffermenge.
+  let accepted = 0;
+  for (const size of [200, 500, 1000, 5000]) {
+    const { res, json } = await api(`${entity}?maxSize=${size}`, { raw: true });
+    if (res.ok) {
+      accepted = size;
+      log(`  maxSize=${size} -> HTTP 200, geliefert=${json.list?.length}`);
+    } else {
+      log(`  maxSize=${size} -> HTTP ${res.status} ${res.headers.get('X-Status-Reason') || ''}`);
+      break;
+    }
+  }
+  log(`  ERGEBNIS A5: höchstes akzeptiertes maxSize = ${accepted}` +
+      (best <= accepted
+        ? ` (Achtung: nur ${best} Datensätze vorhanden — Seitengröße nicht real ausgereizt)`
+        : ''));
 
   // A6: where-Filter auf modifiedAt (Format lt. Doku "Search parameters")
   const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString().slice(0, 19).replace('T', ' ');
@@ -266,6 +317,12 @@ async function probeVersionNumber() {
       body: { name: rec.name, versionNumber: rec.versionNumber - 1 },
     });
     log(`  PUT mit veralteter versionNumber -> HTTP ${staleRes.status} (409 erwartet, sofern Feature aktiv)`);
+    log(`  ERGEBNIS A9: Optimistic Concurrency ${staleRes.status === 409 ? 'AKTIV' : 'INAKTIV (kein 409!)'}`);
+  } else {
+    log('  409-Gegentest ÜBERSPRUNGEN: keine numerische versionNumber am Datensatz.');
+    log('  ERGEBNIS A9: Optimistic Concurrency für diese Entität NICHT aktiv ' +
+        '(Last-write-wins). Aktivierbar in Administration > Entity Manager > ' +
+        `${entity} > Optimistic Concurrency Control; danach erneut proben.`);
   }
 }
 
