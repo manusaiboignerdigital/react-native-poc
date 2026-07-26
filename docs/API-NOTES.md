@@ -4,16 +4,15 @@
 > ⚠️ Abweichung von der Plan-Annahme · ⏳ offen / nicht abschließend geklärt.
 >
 > **Verifiziert am:** 2026-07-26 gegen `http://emayr.local`, Scope
-> `CPruefberichte,CEmayrQrs`; maßgeblich ist der Lauf um 20:19 UTC
+> `CPruefberichte,CEmayrQrs`; maßgeblich ist der Lauf um 21:12 UTC
 > ([`fixtures/probe-report.txt`](../fixtures/probe-report.txt), erzeugt von
 > `scripts/probe.mjs`). Diese Befunde sind gegenüber den Annahmen in PLAN.md
 > **verbindlich**.
 >
-> **Fixtures liegen vor** — alle JSON-Antworten sind im Repo
-> (siehe [fixtures/README.md](../fixtures/README.md)) und damit die Grundlage
-> für die Rendering-Engine (Phase 2) und die Evaluator-Tests (Phase 3).
->
-> **Einzig offen:** die Bestätigung des 409 in A9 (Testfehler behoben, siehe dort).
+> **Phase 0 ist damit abgeschlossen:** A3–A11 sind beantwortet, alle Fixtures
+> liegen im Repo (siehe [fixtures/README.md](../fixtures/README.md)), die
+> CORS-Strategie ist entschieden. Offen ist nur noch eine **Datenqualitätsfrage**
+> zu den eingespielten Testdaten (siehe „Datenlage" unten) — kein API-Befund.
 
 ## Basis
 
@@ -62,14 +61,22 @@ vollständige Layout-Sätze zum Rendern vorhanden.
 - Antwortform: `{ total, list: [...] }` ✅
 - Parameter `maxSize`, `offset`, `orderBy`, `order`, `select` (kommasepariert)
   funktionieren wie erwartet ✅
-- `maxSize`-Obergrenze: die Leiter **200 → 500 → 1000 → 5000** wurde
-  durchgehend mit **HTTP 200** beantwortet. Die Instanz weist große Werte also
-  *nicht* mit HTTP 403 (`Max size should not exceed …`) ab — die in PLAN.md
-  vermutete Grenze von ~200 existiert hier nicht.
-- ⏳ Ungeprüft bleibt, ob eine Seite real >200 Datensätze ausliefert: beide
-  Scope-Entitäten enthalten je **1** Datensatz. Bis zum Gegenbeweis in Phase 4
-  **konservativ `maxSize=200`** verwenden (schont auch den Speicher beim
-  Initial-Pull).
+- `maxSize`-Obergrenze ✅ **geklärt** (mit 10.001 Datensätzen in
+  `CPruefberichte` nachgemessen):
+
+  | `maxSize` | Status | gelieferte Datensätze |
+  |---|---|---|
+  | 200 | 200 | 200 |
+  | 500 | 200 | 500 |
+  | 1000 | 200 | 1000 |
+  | 5000 | 200 | 5000 |
+
+  Die Instanz kappt **nicht** — die in PLAN.md vermutete Grenze von ~200
+  existiert hier nicht, und die Seiten werden auch real gefüllt.
+  → Die Seitengröße ist damit eine **Design-Entscheidung**, keine Restriktion.
+  Empfehlung für Phase 4: **500** pro Seite (21 Requests für 10.001 Datensätze)
+  — groß genug für zügige Replikation, klein genug, dass ein Abbruch wenig
+  Arbeit kostet und der Speicher beim JSON-Parsen nicht unnötig belastet wird.
 
 ## A6 — Delta-Sync über `modifiedAt` ✅
 
@@ -89,6 +96,14 @@ Getestet mit `value=2026-06-26 13:47:47` → HTTP 200, `total=1` ✅
   Delta-Pull konsequent UTC senden.
 - `after` ist **exklusiv** (streng größer) → die in PLAN.md Phase 4 vorgesehene
   Überlappung von 1–2 Minuten plus idempotentes Upsert beibehalten.
+
+⚠️ **`NULL`-`modifiedAt` schlägt auf den Delta-Sync durch.** Im Lauf mit 10.001
+Datensätzen liefert der Delta-Filter weiterhin `total=1`: die 10.000
+eingespielten Testdatensätze haben `modifiedAt = null` (ebenso `createdAt`),
+weil sie an Espos ORM vorbei direkt in die Datenbank geschrieben wurden. Ein
+`after`-Vergleich schließt `NULL` aus — für den Delta-Pull sind diese
+Datensätze also **unsichtbar**. Konsequenzen und Empfehlungen unter
+„Datenlage" am Ende.
 
 ## A7 — Beziehungsattribute im Datensatz ✅
 
@@ -158,9 +173,19 @@ Beachtenswert: `has` operiert auf einem **`checklist`**-Feld — der Evaluator m
 Array-Werte verstehen, und der `checklist`-Renderer aus Phase 2 liefert die
 Datengrundlage dafür.
 
-## A9 — Optimistic Concurrency ✅ aktiv (409-Nachweis ausstehend)
+## A9 — Optimistic Concurrency ✅ **vollständig bestätigt**
 
-Bestätigt durch den Lauf vom 20:19 UTC:
+Nachgewiesen im Lauf vom 21:12 UTC:
+
+```
+[1] PUT maschine="in ordnung"    mit X-Version-Number=26            -> HTTP 200  (neue Version 27)
+[2] PUT maschine="nicht geprüft" mit veraltetem X-Version-Number=26 -> HTTP 409
+[3] Aufräumen: maschine zurück                                      -> HTTP 200
+```
+
+Der Konfliktdialog aus PLAN.md Phase 5 ist damit real auslösbar.
+
+Details:
 
 - `metadata.entityDefs.CPruefberichte.optimisticConcurrencyControl = true` ✅
 - `versionNumber` liegt im **GET-Response** des Datensatzes (Wert `15`) ✅
@@ -177,8 +202,8 @@ Bestätigt durch den Lauf vom 20:19 UTC:
   { "maschine": "fehlerhaft" }        // Version NICHT im Body
   ```
 
-Der 409 selbst ist noch nicht nachgewiesen — beide bisherigen Testvarianten
-waren fehlerhaft:
+Bis dahin waren drei Testvarianten fehlerhaft — der Weg dorthin, damit die
+Semantik dokumentiert bleibt:
 
 > Espo meldet einen Konflikt nur, wenn die veraltete Version mit einer
 > **echten Wertänderung** kombiniert wird. Steht Feld `O` auf `A`, wird
@@ -208,12 +233,12 @@ angehängter Marker (unter Beachtung von `maxLength`). Wird ein Schreibversuch
 abgelehnt, probiert das Skript automatisch das **nächste Kandidatenfeld** —
 `ESPOCRM_TEST_FIELD` steht dabei an erster Stelle, `readOnly`- und
 `notStorable`-Felder bleiben außen vor. Ein leerer Ausgangswert wird als `null`
-zurückgeschrieben (`""` ist für Enums ungültig). Alle Pfade — Enum, Textfeld,
-Ablehnung mit Ausweichen, `versionNumber` nur im PUT-Response, Version im
-Header — sind gegen einen Mock mit Espo-Semantik verifiziert.
+zurückgeschrieben (`""` ist für Enums ungültig).
 
-**Erwartung für den nächsten Lauf:** Schritt 2 liefert HTTP 409; damit ist der
-Konfliktdialog aus PLAN.md Phase 5 realistisch auslösbar.
+ℹ️ Der Testdatensatz (`CPruefberichte`, id `1`) steht durch die Probe-Läufe auf
+`maschine = "fehlerhaft"`; vor Beginn war es `"in ordnung"`. Ein abgebrochener
+Lauf hat den Ausgangswert nicht zurückgeschrieben. Für einen Testdatensatz
+unkritisch, aber gut zu wissen.
 
 ## A10 — CORS ⚠️ blockiert → Strategie entschieden
 
@@ -390,20 +415,45 @@ Das `detail`-Layout referenziert mit `emailAddress` ein Feld, das in
 `entityDefs` als `notStorable` markiert ist — der Renderer darf also nicht
 annehmen, dass jedes Layout-Feld beschreibbar ist.
 
-## Offene Punkte / Entscheidungen für Phase 1
+## Datenlage (Stand 21:12 UTC)
 
-1. ✅ **Entitäten-Scope festgelegt:** `CPruefberichte` + `CEmayrQrs`
-   (siehe A11). Ersetzt „Eingangsrechnung" aus PLAN.md.
-2. **A9 nachproben** mit dem typbewussten Schreibtest. Erwartet: HTTP 409 in
-   Schritt 2. Das ist der letzte offene Nachweis der Phase 0.
-3. **Datenlage für Phase 4:** Beide Scope-Entitäten enthalten **je 1 Datensatz**.
-   Das Akzeptanzkriterium „≥ 1.000 Datensätze paginiert repliziert" ist so nicht
-   erfüllbar. Optionen: Testdaten in der Instanz anlegen, eine datenreichere
-   Entität ergänzen (`CArtikel`, `CEmayrTracks`?), oder das Kriterium bewusst
-   absenken. Zugleich bleibt damit die reale Seitengröße ungeklärt.
-4. ✅ **JSON-Fixtures liegen im Repo.**
-5. ✅ **Aus den Fixtures ausgewertet:** Operatoren, `logicDefs`, Übersetzungsort
-   der `checklist`-Options, Layout- und Datensatzformat (siehe oben).
+`CPruefberichte` enthält jetzt **10.001 Datensätze** — das Mengengerüst für das
+Phase-4-Akzeptanzkriterium („≥ 1.000 paginiert repliziert") steht also. Die
+10.000 eingespielten Datensätze haben allerdings eine Eigenart:
+
+```jsonc
+{ "id": "9999", "name": "value1" }   // modifiedAt: null, createdAt: null, alle Fachfelder leer
+```
+
+Sie wurden direkt in die Datenbank geschrieben, nicht über Espo. Daraus folgen
+drei Dinge für Phase 4:
+
+1. **Delta-Pull sieht sie nicht.** `where[after][modifiedAt]` filtert `NULL`
+   weg — nach dem Initial-Pull erscheinen sie in keinem Delta mehr. Für den
+   Volumentest egal, für einen realistischen Delta-Test nicht.
+2. **`orderBy=modifiedAt` taugt hier nicht zur Paginierung.** Bei 10.000
+   identischen (`NULL`) Sortierschlüsseln ist die Reihenfolge zwischen zwei
+   Requests nicht garantiert — Datensätze können über Seitengrenzen hinweg
+   doppelt erscheinen oder ausfallen. **Empfehlung: Initial-Pull über
+   `orderBy=id&order=asc`** (eindeutig, damit stabil); `modifiedAt` bleibt für
+   den *Delta*-Pull maßgeblich. Das ist eine Abweichung von PLAN.md Phase 4,1.
+3. **Der Volumentest bleibt gültig**, die Renderer-Tests brauchen aber weiter
+   den einen echten Datensatz (id `1`) — die Seed-Datensätze haben außer `name`
+   keine Feldwerte.
+
+**Optional, wenn ein realistischer Delta-Test gewünscht ist:** einmalig
+`modified_at`/`created_at` der Seed-Zeilen in der DB auf einen Zeitstempel
+setzen. Dann greifen Delta-Filter und Sortierung wie in Produktion. Ohne diesen
+Schritt ist Phase 4 trotzdem umsetzbar — der Delta-Pfad wird dann über den
+echten Datensatz demonstriert.
+
+## Erledigt in Phase 0
+
+- ✅ Entitäten-Scope: `CPruefberichte` + `CEmayrQrs` (ersetzt „Eingangsrechnung")
+- ✅ A3–A11 beantwortet, alle mit Beispielen aus echten Antworten
+- ✅ JSON-Fixtures im Repo, Schwärzung geprüft (I18n-Labels bleiben lesbar,
+  Token und echte Adressen sind maskiert)
+- ✅ CORS-Strategie entschieden und dokumentiert
 
 ### Konsequenzen für die Folgephasen
 
@@ -413,6 +463,8 @@ annehmen, dass jedes Layout-Feld beschreibbar ist.
 - **Phase 3:** Evaluator liest `logicDefs` (nicht nur `clientDefs.dynamicLogic`)
   und muss `and, or, equals, has, in, isEmpty, isNotEmpty, isTrue, isFalse`
   beherrschen — `has` auf Array-Werten.
+- **Phase 4:** Initial-Pull `orderBy=id&order=asc` mit `maxSize=500`;
+  Delta-Pull über `modifiedAt` (siehe „Datenlage").
 - **Phase 5:** `versionNumber` kommt mit dem Datensatz und wandert als
   `baseVersionNumber` in die Outbox; beim Push geht sie als Header
   `X-Version-Number` raus (**nicht** im Payload — sonst keine Konfliktprüfung).
