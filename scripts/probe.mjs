@@ -112,6 +112,8 @@ function saveFixture(name, data) {
 }
 
 // ------------------------------------------------------------------- Probes
+let metadataCache = null; // von probeMetadata gefüllt, von probeVersionNumber genutzt
+
 async function probeAppUser() {
   log('\n== A3: GET App/user ==');
   const data = await api('App/user');
@@ -125,6 +127,7 @@ async function probeAppUser() {
 async function probeMetadata() {
   log('\n== A1/A8/A11: GET Metadata ==');
   const data = await api('Metadata');
+  metadataCache = data;
   saveFixture('metadata.json', data);
   log(`  Top-Level-Keys: ${Object.keys(data).join(', ')}`);
 
@@ -291,6 +294,27 @@ async function probeList() {
   }
 }
 
+/**
+ * Wählt ein beschreibbares Textfeld für den Schreibtest.
+ * Espo meldet einen Konflikt nur, wenn sich der geschriebene Wert vom
+ * Serverstand unterscheidet — der Test braucht daher ein Feld, das er
+ * gefahrlos verändern und wieder zurücksetzen kann.
+ */
+function pickTestField(entity, rec) {
+  if (process.env.ESPOCRM_TEST_FIELD) return process.env.ESPOCRM_TEST_FIELD;
+  const fields = metadataCache?.entityDefs?.[entity]?.fields || {};
+  const usable = (name) => {
+    const def = fields[name];
+    return def && ['varchar', 'text'].includes(def.type) &&
+      !def.readOnly && !def.disabled && !def.notStorable;
+  };
+  for (const preferred of ['description', 'comment', 'notes']) {
+    if (usable(preferred)) return preferred;
+  }
+  const found = Object.keys(fields).find((n) => usable(n) && n !== 'name');
+  return found || (('name' in rec) ? 'name' : null);
+}
+
 async function probeVersionNumber() {
   log('\n== A9: Optimistic Concurrency (versionNumber) ==');
   const entity = process.env.ESPOCRM_TEST_ENTITY;
@@ -299,31 +323,84 @@ async function probeVersionNumber() {
     log('  ÜBERSPRUNGEN: ESPOCRM_TEST_ENTITY/ESPOCRM_TEST_RECORD_ID nicht gesetzt.');
     return;
   }
+
+  // Ist das Feature laut Metadata für diese Entität eingeschaltet?
+  for (const [where, node] of [
+    ['scopes', metadataCache?.scopes?.[entity]],
+    ['entityDefs', metadataCache?.entityDefs?.[entity]],
+  ]) {
+    if (node && 'optimisticConcurrencyControl' in node) {
+      log(`  Metadata ${where}.${entity}.optimisticConcurrencyControl = ${node.optimisticConcurrencyControl}`);
+    }
+  }
+
   const rec = await api(`${entity}/${id}`);
   saveFixture(`record-${entity}.json`, rec);
-  log(`  versionNumber im Datensatz vorhanden: ${'versionNumber' in rec} (Wert: ${rec.versionNumber})`);
+  log(`  versionNumber im GET-Response vorhanden: ${'versionNumber' in rec} (Wert: ${rec.versionNumber})`);
 
-  // Non-destructive: name unverändert zurückschreiben, mit aktueller Version
-  const { res: okRes } = await api(`${entity}/${id}`, {
-    method: 'PUT', raw: true,
-    body: { name: rec.name, versionNumber: rec.versionNumber },
-  });
-  log(`  PUT mit aktueller versionNumber -> HTTP ${okRes.status}`);
-
-  // Veraltete Version senden -> 409 erwartet
-  if (typeof rec.versionNumber === 'number') {
-    const { res: staleRes } = await api(`${entity}/${id}`, {
-      method: 'PUT', raw: true,
-      body: { name: rec.name, versionNumber: rec.versionNumber - 1 },
-    });
-    log(`  PUT mit veralteter versionNumber -> HTTP ${staleRes.status} (409 erwartet, sofern Feature aktiv)`);
-    log(`  ERGEBNIS A9: Optimistic Concurrency ${staleRes.status === 409 ? 'AKTIV' : 'INAKTIV (kein 409!)'}`);
-  } else {
-    log('  409-Gegentest ÜBERSPRUNGEN: keine numerische versionNumber am Datensatz.');
-    log('  ERGEBNIS A9: Optimistic Concurrency für diese Entität NICHT aktiv ' +
-        '(Last-write-wins). Aktivierbar in Administration > Entity Manager > ' +
-        `${entity} > Optimistic Concurrency Control; danach erneut proben.`);
+  const field = pickTestField(entity, rec);
+  if (!field) {
+    log('  ABBRUCH: kein beschreibbares Textfeld gefunden. ESPOCRM_TEST_FIELD in .env setzen.');
+    return;
   }
+  const original = rec[field] ?? '';
+  log(`  Testfeld: ${field} (Ausgangswert: ${JSON.stringify(original)})`);
+  log('  HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.');
+
+  const stamp = Date.now();
+  const valueA = `${original} [probe-A-${stamp}]`.trim();
+  const valueB = `${original} [probe-B-${stamp}]`.trim();
+
+  // Schritt 1: echte Wertänderung mit aktueller Version -> erzeugt eine neue Version
+  const v0 = rec.versionNumber;
+  const { res: res1, json: json1 } = await api(`${entity}/${id}`, {
+    method: 'PUT', raw: true,
+    body: { [field]: valueA, ...(typeof v0 === 'number' ? { versionNumber: v0 } : {}) },
+  });
+  log(`  [1] PUT ${field}=A mit versionNumber=${v0 ?? '(keine)'} -> HTTP ${res1.status}`);
+  if (!res1.ok) {
+    log(`      X-Status-Reason: ${res1.headers.get('X-Status-Reason') || '(keiner)'}`);
+    log('  ERGEBNIS A9: unklar — Schreibtest fehlgeschlagen, Datensatz unverändert.');
+    return;
+  }
+  const v1 = json1?.versionNumber;
+  log(`      versionNumber im PUT-Response: ${v1 ?? '(keine)'}`);
+
+  // Schritt 2: veraltete Version UND abweichender Wert -> 409 erwartet.
+  // Genau diese Kombination lässt Espo den Konflikt melden; ein unveränderter
+  // Wert würde auch mit alter Version durchgehen.
+  const stale = typeof v0 === 'number' ? v0
+    : (typeof v1 === 'number' ? v1 - 1 : null);
+
+  if (stale === null) {
+    log('  [2] ÜBERSPRUNGEN: nirgends eine numerische versionNumber erhalten.');
+    log('  ERGEBNIS A9: Optimistic Concurrency liefert keine Version — ' +
+        `in Administration > Entity Manager > ${entity} prüfen.`);
+  } else {
+    const { res: res2 } = await api(`${entity}/${id}`, {
+      method: 'PUT', raw: true,
+      body: { [field]: valueB, versionNumber: stale },
+    });
+    log(`  [2] PUT ${field}=B (abweichend) mit veralteter versionNumber=${stale} -> HTTP ${res2.status}`);
+    if (res2.status !== 409) {
+      log(`      X-Status-Reason: ${res2.headers.get('X-Status-Reason') || '(keiner)'}`);
+    }
+    log(`  ERGEBNIS A9: Optimistic Concurrency ${res2.status === 409
+      ? 'AKTIV — Konflikt wird als HTTP 409 gemeldet (Phase 5 kann darauf bauen).'
+      : `INAKTIV — erwartet 409, erhalten ${res2.status}.`}`);
+  }
+
+  // Schritt 3: Aufräumen — Ausgangswert mit frischer Version zurückschreiben
+  const fresh = await api(`${entity}/${id}`);
+  const { res: res3 } = await api(`${entity}/${id}`, {
+    method: 'PUT', raw: true,
+    body: {
+      [field]: original,
+      ...(typeof fresh.versionNumber === 'number' ? { versionNumber: fresh.versionNumber } : {}),
+    },
+  });
+  log(`  [3] Aufräumen: ${field} auf Ausgangswert zurück -> HTTP ${res3.status}` +
+      (res3.ok ? '' : ' — WARNUNG: bitte manuell prüfen!'));
 }
 
 async function probeCors() {

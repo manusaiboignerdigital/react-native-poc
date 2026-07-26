@@ -124,25 +124,39 @@ Im Listen-Ergebnis mit `select=…,assignedUserId,assignedUserName,teamsIds,team
   prüfen, ob dort (Espo 9/10) Bedingungen liegen, die `clientDefs.dynamicLogic`
   ergänzen oder ablösen.
 
-## A9 — Optimistic Concurrency ⚠️ **Annahme widerlegt**
+## A9 — Optimistic Concurrency ⏳ Neutest ausstehend
 
-- `versionNumber` ist im Datensatz **nicht enthalten** (`undefined`).
-- `PUT` ohne gültige `versionNumber` → **HTTP 200**, die Änderung geht durch.
-- Der 409-Gegentest wurde vom Skript übersprungen, weil keine numerische
-  Ausgangsversion vorlag.
+Optimistic Concurrency **ist auf der Instanz aktiv**. Die ersten beiden
+Probe-Läufe konnten das nicht zeigen, weil der Test methodisch falsch war:
 
-**Konsequenz für Phase 5:** Es gibt auf dieser Instanz derzeit **keinen
-Server-seitigen Konfliktschutz** — Standard ist Last-write-wins. Zwei Optionen:
+> Espo meldet einen Konflikt nur, wenn die veraltete Version mit einer
+> **echten Wertänderung** kombiniert wird. Steht Feld `O` auf `A`, wird
+> serverseitig auf `B` geändert und schickt ein alter Client `O=C` mit der
+> alten Version, kommt HTTP 409. Schreibt der Client dagegen den **unveränderten**
+> Wert zurück, geht der Request auch mit alter Version durch.
 
-1. **Feature aktivieren** (bevorzugt für die Konflikt-Demo): In Espo
-   *Administration → Entity Manager → {Entität} → Optimistic Concurrency Control*
-   einschalten; danach A9 erneut proben. Erst dann liefert der Server 409 und
-   der in PLAN.md Phase 5 geplante Konfliktdialog ist realistisch auslösbar.
-2. **Fallback ohne Server-Support:** `modifiedAt` des lokalen Ausgangsstands
-   mitführen und vor dem Push mit dem Server-Stand vergleichen (Read-before-write).
-   Das ist ein Race, kein echter Schutz — nur als dokumentierte Prototyp-Grenze.
+Der alte Test schrieb `name` unverändert zurück (bewusst non-destructive) und
+konnte den Konflikt daher prinzipiell nie auslösen. HTTP 200 war korrektes
+Server-Verhalten, kein Hinweis auf ein fehlendes Feature.
 
-→ **Entscheidung erforderlich** (siehe „Offene Punkte" unten).
+**Umgebauter Test** (`scripts/probe.mjs`, Schritte im Report nummeriert):
+
+1. `PUT {feld: A}` mit aktueller `versionNumber` → erzeugt eine neue Version;
+   `versionNumber` wird aus dem **PUT-Response** gelesen (der GET-Response
+   enthielt sie in den bisherigen Läufen nicht).
+2. `PUT {feld: B}` — abweichender Wert — mit der **veralteten** `versionNumber`
+   → hier muss HTTP 409 kommen.
+3. Aufräumen: Ausgangswert mit frischer Version zurückschreiben.
+
+Das Testfeld ist ein Textfeld (`description`/`comment`/`notes`, sonst das erste
+beschreibbare `varchar`/`text`-Feld; überschreibbar per `ESPOCRM_TEST_FIELD`);
+`name` wird gemieden. Der Ausgangswert steht im Report, falls ein Abbruch das
+Aufräumen verhindert. Beide Varianten — `versionNumber` im GET vorhanden bzw.
+nur im PUT-Response — sind gegen einen Mock verifiziert.
+
+**Offen:** Bestätigung durch einen echten Lauf, dazu die Frage, ob `versionNumber`
+im GET-Response fehlt (dann muss der Client sie beim Laden separat beschaffen —
+relevant für `baseVersionNumber` in der Outbox, PLAN.md Phase 5).
 
 ## A10 — CORS ⚠️ blockiert → Strategie entschieden
 
@@ -256,9 +270,9 @@ Fallback-Kette für die Engine: `{Entity}.options.{field}` → `Global.options.{
 
 1. ✅ **Entitäten-Scope festgelegt:** `CPruefberichte` + `CEmayrQrs`
    (siehe A11). Ersetzt „Eingangsrechnung" aus PLAN.md.
-2. **A9-Entscheidung:** Optimistic Concurrency Control im Entity Manager
-   aktivieren (dann A9 nachproben) — oder Konflikterkennung als dokumentierte
-   Prototyp-Grenze führen. **Blockiert die Konflikt-Demo aus Phase 5.**
+2. **A9 nachproben** mit dem umgebauten Schreibtest (echte Wertänderung +
+   veraltete Version). Erwartet: HTTP 409. Ergebnis hier eintragen, insbesondere
+   ob `versionNumber` im GET-Response mitkommt.
 3. **Datenlage für Phase 4:** `CPruefberichte` enthält aktuell **1 Datensatz**.
    Das Akzeptanzkriterium „≥ 1.000 Datensätze paginiert repliziert" ist so nicht
    erfüllbar. Optionen: Testdaten in der Instanz anlegen, eine datenreichere
