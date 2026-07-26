@@ -8,3 +8,6 @@ dist/
 
 # Rohe (nicht geschwärzte) Probe-Ausgaben
 fixtures/raw/
+
+# by TB
+.idea
