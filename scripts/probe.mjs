@@ -90,6 +90,10 @@ async function api(path, { method = 'GET', body, headers = {}, raw = false } = {
  */
 const SENSITIVE_KEY = /token|password|secret|apiKey|authKey|secretKey|smtp|salt/i;
 const PII_KEY = /^(emailAddress|phoneNumber|phone|mobile|sipUri)/i;
+// Nur maskieren, wenn der Wert auch wie eine Adresse/Nummer aussieht — sonst
+// würden I18n-Labels ("E-Mail") und Feldnamen mitgeschwärzt.
+const LOOKS_LIKE_EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const LOOKS_LIKE_PHONE = /^[+(]?[\d][\d\s()/-]{5,}$/;
 function redact(value, key = '') {
   if (Array.isArray(value)) return value.map((v) => redact(v, key));
   if (value && typeof value === 'object') {
@@ -99,7 +103,9 @@ function redact(value, key = '') {
   }
   if (typeof value === 'string' && value !== '') {
     if (SENSITIVE_KEY.test(key)) return '***REDACTED***';
-    if (PII_KEY.test(key)) return '***PII***';
+    if (PII_KEY.test(key) && (LOOKS_LIKE_EMAIL.test(value) || LOOKS_LIKE_PHONE.test(value))) {
+      return '***PII***';
+    }
   }
   return value;
 }
@@ -294,25 +300,115 @@ async function probeList() {
   }
 }
 
+const TESTABLE_TYPES = ['text', 'varchar', 'enum', 'bool', 'checklist', 'multiEnum', 'array'];
+
 /**
- * Wählt ein beschreibbares Textfeld für den Schreibtest.
- * Espo meldet einen Konflikt nur, wenn sich der geschriebene Wert vom
- * Serverstand unterscheidet — der Test braucht daher ein Feld, das er
- * gefahrlos verändern und wieder zurücksetzen kann.
+ * Kandidatenfelder für den Schreibtest, in Präferenzreihenfolge.
+ * Ein per ESPOCRM_TEST_FIELD gesetztes Feld kommt zuerst; schlägt der Schreib-
+ * versuch dort fehl (z. B. Server-Validierung), wird das nächste probiert.
  */
-function pickTestField(entity, rec) {
-  if (process.env.ESPOCRM_TEST_FIELD) return process.env.ESPOCRM_TEST_FIELD;
+function testFieldCandidates(entity) {
   const fields = metadataCache?.entityDefs?.[entity]?.fields || {};
-  const usable = (name) => {
+  const writable = (name) => {
     const def = fields[name];
-    return def && ['varchar', 'text'].includes(def.type) &&
-      !def.readOnly && !def.disabled && !def.notStorable;
+    return def && !def.readOnly && !def.disabled && !def.notStorable &&
+      TESTABLE_TYPES.includes(def.type);
   };
-  for (const preferred of ['description', 'comment', 'notes']) {
-    if (usable(preferred)) return preferred;
+  const byType = (types) =>
+    Object.keys(fields).filter((n) => writable(n) && types.includes(fields[n].type) && n !== 'name');
+
+  return [...new Set([
+    ...(process.env.ESPOCRM_TEST_FIELD ? [process.env.ESPOCRM_TEST_FIELD] : []),
+    ...['description', 'bemerkungen', 'comment', 'notes'].filter(writable),
+    ...byType(['text', 'varchar']),
+    ...byType(['enum', 'bool', 'checklist', 'multiEnum', 'array']),
+  ])];
+}
+
+/**
+ * Zwei zum Feldtyp passende, voneinander verschiedene Testwerte.
+ * Espo meldet den Konflikt nur bei einer echten Wertänderung — ein an einen
+ * Enum-Wert angehängter Marker wäre dagegen ungültig (HTTP 400, "valid").
+ */
+function makeTestValues(def, current, stamp) {
+  const options = Array.isArray(def?.options) ? def.options.filter((o) => o !== '' && o != null) : [];
+  const marker = (suffix) => {
+    const base = typeof current === 'string' ? current : '';
+    const tag = `probe${suffix}${stamp}`;
+    const combined = `${base} ${tag}`.trim();
+    return def?.maxLength && combined.length > def.maxLength ? tag.slice(0, def.maxLength) : combined;
+  };
+
+  switch (def?.type) {
+    case 'varchar':
+    case 'text':
+      return { a: marker('A'), b: marker('B') };
+    case 'enum': {
+      const pool = options.filter((o) => o !== current);
+      return pool.length >= 2 ? { a: pool[0], b: pool[1] } : null;
+    }
+    case 'bool':
+      return { a: !current, b: !!current };
+    case 'checklist':
+    case 'multiEnum':
+    case 'array':
+      return options.length >= 2 ? { a: [options[0]], b: [options[1]] } : null;
+    default:
+      return null;
   }
-  const found = Object.keys(fields).find((n) => usable(n) && n !== 'name');
-  return found || (('name' in rec) ? 'name' : null);
+}
+
+/**
+ * Führt den dreistufigen Konflikttest für ein Feld aus.
+ * Rückgabe: true, wenn der Test durchlief (Ergebnis steht im Report),
+ * false, wenn schon der erste Schreibversuch scheiterte (nächstes Feld probieren).
+ */
+async function runConflictTest(entity, id, field, original, { a, b }, v0) {
+  // Schritt 1: echte Wertänderung mit aktueller Version -> neue Version
+  const { res: res1, json: json1 } = await api(`${entity}/${id}`, {
+    method: 'PUT', raw: true,
+    body: { [field]: a, ...(typeof v0 === 'number' ? { versionNumber: v0 } : {}) },
+  });
+  log(`  [1] PUT ${field}=${JSON.stringify(a)} mit versionNumber=${v0 ?? '(keine)'} -> HTTP ${res1.status}`);
+  if (!res1.ok) {
+    log(`      X-Status-Reason: ${res1.headers.get('X-Status-Reason') || '(keiner)'}`);
+    return false;
+  }
+  const v1 = json1?.versionNumber;
+  log(`      versionNumber im PUT-Response: ${v1 ?? '(keine)'}`);
+
+  // Schritt 2: veraltete Version UND abweichender Wert -> 409 erwartet
+  const stale = typeof v0 === 'number' ? v0 : (typeof v1 === 'number' ? v1 - 1 : null);
+  if (stale === null) {
+    log('  [2] ÜBERSPRUNGEN: nirgends eine numerische versionNumber erhalten.');
+    log('  ERGEBNIS A9: Optimistic Concurrency liefert keine Version — ' +
+        `in Administration > Entity Manager > ${entity} prüfen.`);
+  } else {
+    const { res: res2 } = await api(`${entity}/${id}`, {
+      method: 'PUT', raw: true,
+      body: { [field]: b, versionNumber: stale },
+    });
+    log(`  [2] PUT ${field}=${JSON.stringify(b)} (abweichend) mit veralteter versionNumber=${stale} -> HTTP ${res2.status}`);
+    if (res2.status !== 409) {
+      log(`      X-Status-Reason: ${res2.headers.get('X-Status-Reason') || '(keiner)'}`);
+    }
+    log(`  ERGEBNIS A9: Optimistic Concurrency ${res2.status === 409
+      ? 'AKTIV — Konflikt wird als HTTP 409 gemeldet (Phase 5 kann darauf bauen).'
+      : `INAKTIV — erwartet 409, erhalten ${res2.status}.`}`);
+  }
+
+  // Schritt 3: Aufräumen — Ausgangswert mit frischer Version zurückschreiben
+  const fresh = await api(`${entity}/${id}`);
+  const { res: res3 } = await api(`${entity}/${id}`, {
+    method: 'PUT', raw: true,
+    body: {
+      [field]: original,
+      ...(typeof fresh.versionNumber === 'number' ? { versionNumber: fresh.versionNumber } : {}),
+    },
+  });
+  log(`  [3] Aufräumen: ${field} auf ${JSON.stringify(original)} zurück -> HTTP ${res3.status}` +
+      (res3.ok ? '' : ' — WARNUNG: bitte manuell prüfen!'));
+  return true;
 }
 
 async function probeVersionNumber() {
@@ -338,69 +434,32 @@ async function probeVersionNumber() {
   saveFixture(`record-${entity}.json`, rec);
   log(`  versionNumber im GET-Response vorhanden: ${'versionNumber' in rec} (Wert: ${rec.versionNumber})`);
 
-  const field = pickTestField(entity, rec);
-  if (!field) {
-    log('  ABBRUCH: kein beschreibbares Textfeld gefunden. ESPOCRM_TEST_FIELD in .env setzen.');
+  const fields = metadataCache?.entityDefs?.[entity]?.fields || {};
+  const candidates = testFieldCandidates(entity);
+  if (!candidates.length) {
+    log('  ABBRUCH: kein beschreibbares Feld gefunden. ESPOCRM_TEST_FIELD in .env setzen.');
     return;
   }
-  const original = rec[field] ?? '';
-  log(`  Testfeld: ${field} (Ausgangswert: ${JSON.stringify(original)})`);
-  log('  HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.');
+  log(`  Kandidatenfelder: ${candidates.join(', ')}`);
 
   const stamp = Date.now();
-  const valueA = `${original} [probe-A-${stamp}]`.trim();
-  const valueB = `${original} [probe-B-${stamp}]`.trim();
-
-  // Schritt 1: echte Wertänderung mit aktueller Version -> erzeugt eine neue Version
-  const v0 = rec.versionNumber;
-  const { res: res1, json: json1 } = await api(`${entity}/${id}`, {
-    method: 'PUT', raw: true,
-    body: { [field]: valueA, ...(typeof v0 === 'number' ? { versionNumber: v0 } : {}) },
-  });
-  log(`  [1] PUT ${field}=A mit versionNumber=${v0 ?? '(keine)'} -> HTTP ${res1.status}`);
-  if (!res1.ok) {
-    log(`      X-Status-Reason: ${res1.headers.get('X-Status-Reason') || '(keiner)'}`);
-    log('  ERGEBNIS A9: unklar — Schreibtest fehlgeschlagen, Datensatz unverändert.');
-    return;
-  }
-  const v1 = json1?.versionNumber;
-  log(`      versionNumber im PUT-Response: ${v1 ?? '(keine)'}`);
-
-  // Schritt 2: veraltete Version UND abweichender Wert -> 409 erwartet.
-  // Genau diese Kombination lässt Espo den Konflikt melden; ein unveränderter
-  // Wert würde auch mit alter Version durchgehen.
-  const stale = typeof v0 === 'number' ? v0
-    : (typeof v1 === 'number' ? v1 - 1 : null);
-
-  if (stale === null) {
-    log('  [2] ÜBERSPRUNGEN: nirgends eine numerische versionNumber erhalten.');
-    log('  ERGEBNIS A9: Optimistic Concurrency liefert keine Version — ' +
-        `in Administration > Entity Manager > ${entity} prüfen.`);
-  } else {
-    const { res: res2 } = await api(`${entity}/${id}`, {
-      method: 'PUT', raw: true,
-      body: { [field]: valueB, versionNumber: stale },
-    });
-    log(`  [2] PUT ${field}=B (abweichend) mit veralteter versionNumber=${stale} -> HTTP ${res2.status}`);
-    if (res2.status !== 409) {
-      log(`      X-Status-Reason: ${res2.headers.get('X-Status-Reason') || '(keiner)'}`);
+  for (const field of candidates) {
+    const def = fields[field];
+    const original = rec[field] ?? (def?.type === 'bool' ? false : '');
+    const values = makeTestValues(def, original, stamp);
+    if (!values) {
+      log(`  ${field}: übersprungen (Typ ${def?.type ?? 'unbekannt'} nicht testbar bzw. zu wenige Optionen)`);
+      continue;
     }
-    log(`  ERGEBNIS A9: Optimistic Concurrency ${res2.status === 409
-      ? 'AKTIV — Konflikt wird als HTTP 409 gemeldet (Phase 5 kann darauf bauen).'
-      : `INAKTIV — erwartet 409, erhalten ${res2.status}.`}`);
+    // Ein leerer Ausgangswert muss als null zurückgeschrieben werden — "" ist
+    // für enum/checklist kein gültiger Wert.
+    const restore = original === '' && def.type !== 'varchar' && def.type !== 'text' ? null : original;
+    log(`  Testfeld: ${field} (Typ ${def.type}, Ausgangswert ${JSON.stringify(original)})`);
+    log('  HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.');
+    if (await runConflictTest(entity, id, field, restore, values, rec.versionNumber)) return;
+    log('      -> Schreibversuch abgelehnt, nächstes Kandidatenfeld');
   }
-
-  // Schritt 3: Aufräumen — Ausgangswert mit frischer Version zurückschreiben
-  const fresh = await api(`${entity}/${id}`);
-  const { res: res3 } = await api(`${entity}/${id}`, {
-    method: 'PUT', raw: true,
-    body: {
-      [field]: original,
-      ...(typeof fresh.versionNumber === 'number' ? { versionNumber: fresh.versionNumber } : {}),
-    },
-  });
-  log(`  [3] Aufräumen: ${field} auf Ausgangswert zurück -> HTTP ${res3.status}` +
-      (res3.ok ? '' : ' — WARNUNG: bitte manuell prüfen!'));
+  log('  ERGEBNIS A9: unklar — kein Kandidatenfeld war beschreibbar.');
 }
 
 async function probeCors() {

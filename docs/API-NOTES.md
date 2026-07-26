@@ -3,21 +3,17 @@
 > Status-Legende: ✅ an der Instanz verifiziert · 📚 per offizieller Doku belegt ·
 > ⚠️ Abweichung von der Plan-Annahme · ⏳ offen / nicht abschließend geklärt.
 >
-> **Verifiziert am:** 2026-07-26 gegen `http://emayr.local`, zwei Läufe
-> (zuletzt 14:13 UTC mit dem Scope `CPruefberichte,CEmayrQrs`; Report:
-> [`fixtures/probe-report.txt`](../fixtures/probe-report.txt), erzeugt von
+> **Verifiziert am:** 2026-07-26 gegen `http://emayr.local`, Scope
+> `CPruefberichte,CEmayrQrs`; maßgeblich ist der Lauf um 20:19 UTC
+> ([`fixtures/probe-report.txt`](../fixtures/probe-report.txt), erzeugt von
 > `scripts/probe.mjs`). Diese Befunde sind gegenüber den Annahmen in PLAN.md
 > **verbindlich**.
 >
-> **Hinweis zu den Fixtures:** Die Probe-Läufe fanden auf dem Entwicklerrechner
-> statt (die Instanz ist nur im lokalen Netz erreichbar). Bisher liegt nur der
-> Report im Repo; die JSON-Fixtures müssen noch aus dem lokalen `fixtures/`
-> übernommen werden (siehe [fixtures/README.md](../fixtures/README.md)).
+> **Fixtures liegen vor** — alle JSON-Antworten sind im Repo
+> (siehe [fixtures/README.md](../fixtures/README.md)) und damit die Grundlage
+> für die Rendering-Engine (Phase 2) und die Evaluator-Tests (Phase 3).
 >
-> **Noch nicht nachgeprüft:** Beide Läufe nutzten die Skriptversion *vor* den
-> Nachschärfungen (Commit `7fafedd`). Die dort ergänzten Auswertungen —
-> `maxSize`-Leiter, Operator-Liste für den Evaluator, `logicDefs`,
-> Feldtypen-Zensus, expliziter A9-Befund — liefert erst der nächste Lauf.
+> **Einzig offen:** die Bestätigung des 409 in A9 (Testfehler behoben, siehe dort).
 
 ## Basis
 
@@ -66,16 +62,14 @@ vollständige Layout-Sätze zum Rendern vorhanden.
 - Antwortform: `{ total, list: [...] }` ✅
 - Parameter `maxSize`, `offset`, `orderBy`, `order`, `select` (kommasepariert)
   funktionieren wie erwartet ✅
-- `maxSize`-Obergrenze ⏳ **teilweise geklärt**: `maxSize=500` wurde mit
-  **HTTP 200** beantwortet — die Instanz weist große Werte also *nicht* mit
-  HTTP 403 (`X-Status-Reason: Max size should not exceed …`) ab. Die vermutete
-  Grenze von ~200 gilt hier somit nicht bzw. liegt höher.
-  Offen bleibt, ob eine Seite tatsächlich >200 Datensätze ausliefert: die
-  Testentität `CPruefberichte` enthält nur **1** Datensatz.
-  → Der Probe-Lauf tastet das Limit inzwischen als Leiter ab
-  (200 → 500 → 1000 → 5000) und wählt automatisch die datenreichste
-  Scope-Entität. Vor Phase 4 nachtesten; bis zum Gegenbeweis
-  **konservativ `maxSize=200`** verwenden.
+- `maxSize`-Obergrenze: die Leiter **200 → 500 → 1000 → 5000** wurde
+  durchgehend mit **HTTP 200** beantwortet. Die Instanz weist große Werte also
+  *nicht* mit HTTP 403 (`Max size should not exceed …`) ab — die in PLAN.md
+  vermutete Grenze von ~200 existiert hier nicht.
+- ⏳ Ungeprüft bleibt, ob eine Seite real >200 Datensätze ausliefert: beide
+  Scope-Entitäten enthalten je **1** Datensatz. Bis zum Gegenbeweis in Phase 4
+  **konservativ `maxSize=200`** verwenden (schont auch den Speicher beim
+  Initial-Pull).
 
 ## A6 — Delta-Sync über `modifiedAt` ✅
 
@@ -110,24 +104,71 @@ Im Listen-Ergebnis mit `select=…,assignedUserId,assignedUserName,teamsIds,team
 → Annahme bestätigt: `link` → `{link}Id`/`{link}Name`, `linkMultiple` →
 `{link}Ids`/`{link}Names`, sofern per `select` angefordert.
 
-## A8 — Dynamic Logic ✅ (teilweise)
+## A8 — Dynamic Logic ⚠️ **Quelle korrigiert: `logicDefs`**
 
-- Pfad `clientDefs.{Entity}.dynamicLogic` bestätigt ✅
-- Auf dieser Instanz nutzt **nur `CEmayrQrs`** Dynamic Logic
-  (→ `fixtures/dynamic-logic-examples.json`) — in beiden Läufen bestätigt.
-  `CEmayrQrs` ist deshalb im Scope: ohne diese Entität hätte Phase 3 keine
-  echte Bedingung zum Testen.
-- ⏳ Die konkret verwendeten Operatoren sind aus dem Report nicht ersichtlich und
-  müssen vor Phase 3 aus dem Fixture ausgelesen werden. Der Evaluator bekommt
-  ohnehin einen Fallback (unbekannter Operator → `true` + Warnung).
-- ℹ️ `Metadata` hat zusätzlich den Top-Level-Key **`logicDefs`** — im Fixture
-  prüfen, ob dort (Espo 9/10) Bedingungen liegen, die `clientDefs.dynamicLogic`
-  ergänzen oder ablösen.
+Die Annahme aus PLAN.md (`clientDefs.{Entity}.dynamicLogic`) greift zu kurz.
+Maßgeblich ist der Top-Level-Key **`logicDefs`**:
 
-## A9 — Optimistic Concurrency ⏳ Neutest ausstehend
+```
+logicDefs.{Entity}.fields.{field}.{visible|readOnly|required}.conditionGroup
+```
 
-Optimistic Concurrency **ist auf der Instanz aktiv**. Die ersten beiden
-Probe-Läufe konnten das nicht zeigen, weil der Test methodisch falsch war:
+| Quelle | Inhalt auf dieser Instanz |
+|---|---|
+| `clientDefs.{Entity}.dynamicLogic` | nur `CEmayrQrs` (1 Feld) |
+| `logicDefs.{Entity}` | `EmailAccount`, `EmailFilter`, `Preferences`, `Template`, `User`, **`CPruefberichte`**, `CEmayrQrs` |
+
+**`CPruefberichte` hat 11 Felder mit Dynamic Logic — ausschließlich in
+`logicDefs`.** Würde die Engine nur `clientDefs.dynamicLogic` lesen, bliebe die
+gesamte Logik der Hauptentität unsichtbar.
+
+→ **Für Phase 3:** primär `logicDefs` lesen, `clientDefs.{Entity}.dynamicLogic`
+als Fallback mergen (bei `CEmayrQrs` sind beide inhaltsgleich).
+
+Felder mit Logik in `logicDefs.CPruefberichte`:
+
+| Feld | Regeln |
+|---|---|
+| `sonstiges`, `ersatzteileAbfuellstation`, `ersatzteileDosiergeraete`, `ersatzteileSpraystation`, `sonstigesErsatzteileSpraystation` | `visible` + `readOnly` |
+| `cLieferschein`, `dosierung`, `anmerkungDosierung`, `anmerkungMaschine`, `maschine`, `ersatzteile` | `readOnly` |
+
+**Tatsächlich verwendete Operatoren** (Pflichtumfang des Evaluators):
+
+```
+and, or, equals, has, in, isEmpty, isNotEmpty, isTrue, isFalse
+```
+
+Die Plan-Liste enthält darüber hinaus `not`, `notEquals`, `greaterThan`,
+`lessThan`, `greaterThanOrEquals`, `lessThanOrEquals`, `notIn`, `contains` —
+auf dieser Instanz ungenutzt, aber billig mitzunehmen. Der Fallback für
+unbekannte Operatoren (→ `true` + Warnung) bleibt Pflicht.
+
+Zwei reale Beispiele für die Unit-Tests (aus `fixtures/dynamic-logic-examples.json`):
+
+```jsonc
+// sonstiges.visible — verschachteltes or + has auf einem checklist-Feld
+{ "type": "or", "value": [
+    { "type": "has", "attribute": "ersatzteileDosiergeraete", "value": "Sonstiges" } ] }
+
+// sonstiges.readOnly — sperrt das Formular nach dem Signieren
+{ "type": "equals", "attribute": "status", "value": "signed" }
+```
+
+Beachtenswert: `has` operiert auf einem **`checklist`**-Feld — der Evaluator muss
+Array-Werte verstehen, und der `checklist`-Renderer aus Phase 2 liefert die
+Datengrundlage dafür.
+
+## A9 — Optimistic Concurrency ✅ aktiv (409-Nachweis ausstehend)
+
+Bestätigt durch den Lauf vom 20:19 UTC:
+
+- `metadata.entityDefs.CPruefberichte.optimisticConcurrencyControl = true` ✅
+- `versionNumber` liegt im **GET-Response** des Datensatzes (Wert `15`) ✅
+  → Der Client kann `baseVersionNumber` für die Outbox (Phase 5) direkt beim
+  Replizieren mitnehmen; kein Zusatz-Request nötig.
+
+Der 409 selbst ist noch nicht nachgewiesen — beide bisherigen Testvarianten
+waren fehlerhaft:
 
 > Espo meldet einen Konflikt nur, wenn die veraltete Version mit einer
 > **echten Wertänderung** kombiniert wird. Steht Feld `O` auf `A`, wird
@@ -135,28 +176,34 @@ Probe-Läufe konnten das nicht zeigen, weil der Test methodisch falsch war:
 > alten Version, kommt HTTP 409. Schreibt der Client dagegen den **unveränderten**
 > Wert zurück, geht der Request auch mit alter Version durch.
 
-Der alte Test schrieb `name` unverändert zurück (bewusst non-destructive) und
-konnte den Konflikt daher prinzipiell nie auslösen. HTTP 200 war korrektes
-Server-Verhalten, kein Hinweis auf ein fehlendes Feature.
+1. **Lauf 1+2:** schrieben `name` unverändert zurück (bewusst non-destructive)
+   und konnten den Konflikt prinzipiell nie auslösen. HTTP 200 war korrektes
+   Server-Verhalten, kein Hinweis auf ein fehlendes Feature.
+2. **Lauf 3:** Testfeld war `maschine` — ein **`enum`**. Der Test hängte einen
+   Marker an den Wert (`"in ordnung [probe-A-…]"`), was die Server-Validierung
+   zu Recht mit **HTTP 400** ablehnte:
+   `Field validation failure; field: maschine, type: valid.`
 
 **Umgebauter Test** (`scripts/probe.mjs`, Schritte im Report nummeriert):
 
-1. `PUT {feld: A}` mit aktueller `versionNumber` → erzeugt eine neue Version;
-   `versionNumber` wird aus dem **PUT-Response** gelesen (der GET-Response
-   enthielt sie in den bisherigen Läufen nicht).
+1. `PUT {feld: A}` mit aktueller `versionNumber` → erzeugt eine neue Version.
 2. `PUT {feld: B}` — abweichender Wert — mit der **veralteten** `versionNumber`
    → hier muss HTTP 409 kommen.
 3. Aufräumen: Ausgangswert mit frischer Version zurückschreiben.
 
-Das Testfeld ist ein Textfeld (`description`/`comment`/`notes`, sonst das erste
-beschreibbare `varchar`/`text`-Feld; überschreibbar per `ESPOCRM_TEST_FIELD`);
-`name` wird gemieden. Der Ausgangswert steht im Report, falls ein Abbruch das
-Aufräumen verhindert. Beide Varianten — `versionNumber` im GET vorhanden bzw.
-nur im PUT-Response — sind gegen einen Mock verifiziert.
+Die Testwerte richten sich jetzt nach dem **Feldtyp**: bei `enum` zwei
+verschiedene gültige Optionen, bei `checklist`/`multiEnum`/`array` zwei
+Options-Arrays, bei `bool` das Umschalten, nur bei `varchar`/`text` ein
+angehängter Marker (unter Beachtung von `maxLength`). Wird ein Schreibversuch
+abgelehnt, probiert das Skript automatisch das **nächste Kandidatenfeld** —
+`ESPOCRM_TEST_FIELD` steht dabei an erster Stelle, `readOnly`- und
+`notStorable`-Felder bleiben außen vor. Ein leerer Ausgangswert wird als `null`
+zurückgeschrieben (`""` ist für Enums ungültig). Alle Pfade — Enum, Textfeld,
+Ablehnung mit Ausweichen, `versionNumber` nur im PUT-Response — sind gegen
+einen Mock mit Espo-Semantik verifiziert.
 
-**Offen:** Bestätigung durch einen echten Lauf, dazu die Frage, ob `versionNumber`
-im GET-Response fehlt (dann muss der Client sie beim Laden separat beschaffen —
-relevant für `baseVersionNumber` in der Outbox, PLAN.md Phase 5).
+**Erwartung für den nächsten Lauf:** Schritt 2 liefert HTTP 409; damit ist der
+Konfliktdialog aus PLAN.md Phase 5 realistisch auslösbar.
 
 ## A10 — CORS ⚠️ blockiert → Strategie entschieden
 
@@ -240,8 +287,25 @@ Zusicherung „die Engine crasht nie".
 
 Nicht vorhanden in beiden Scope-Entitäten: `int`, `float`, `currency`, `phone`,
 `url`, `multiEnum`. Die Registry-Einträge dafür bleiben sinnvoll (Standardfelder
-anderer Entitäten), haben aber keine Priorität. Ein instanzweiter Feldtypen-Zensus
-folgt mit dem nächsten Probe-Lauf.
+anderer Entitäten), haben aber keine Priorität.
+
+### Feldtypen instanzweit (alle 22 Entitäten)
+
+```
+varchar(78), link(58), bool(51), datetime(39), enum(32), linkMultiple(23),
+text(17), int(16), jsonObject(11), float(10), linkParent(9), array(8),
+jsonArray(7), checklist(5), password(4), date(4), enumInt(4), wysiwyg(4),
+autoincrement(3), foreign(3), email(3), multiEnum(2), personName(2), phone(2),
+image(2), id(1), file(1), attachmentMultiple(1), base(1), colorpicker(1),
+url(1), address(1), map(1), barcode(1)
+```
+
+Die Registry aus PLAN.md deckt die **fünf häufigsten** Typen ab. Für den
+Prototyp genügt der Scope; landen später weitere Entitäten in der App, fallen
+`linkParent`, `jsonObject`, `array`, `enumInt`, `wysiwyg`, `autoincrement`,
+`foreign`, `personName` und `address` in den Fallback-Renderer. **`currency`
+existiert auf dieser Instanz gar nicht** — der in PLAN.md vorgesehene
+(vereinfachte) Currency-Renderer ist damit unnötig.
 
 ## I18n: Enum-Options-Übersetzungen ✅
 
@@ -257,29 +321,88 @@ ersatzteileSpraystation, ersatzteileAbfuellstation, status
 enthält keine `enum`-Felder. Die Übersetzungskette wird also nur über
 `CPruefberichte` ausgeübt.
 
-⏳ Zu prüfen: Die drei `checklist`-Felder von `CPruefberichte` erscheinen
-**nicht** unter den `options`-Feldern. Im `i18n.json`-Fixture nachsehen, wo
-deren Auswahlwerte übersetzt sind (evtl. eigener Block oder nur in
-`entityDefs.…fields.{field}.options`) — relevant für den `checklist`-Renderer.
+✅ **`checklist`-Optionen liegen am selben Ort** wie Enum-Optionen — die drei
+Felder `ersatzteileDosiergeraete`, `ersatzteileSpraystation` und
+`ersatzteileAbfuellstation` stehen mit unter `CPruefberichte.options`. Der
+`checklist`-Renderer kann dieselbe Übersetzungsfunktion nutzen wie `enum`.
+
+Beispiele aus dem Fixture:
+
+```jsonc
+"CPruefberichte": {
+  "fields":  { "sonstiges": "Sonstiges Ersatzteile Dosiergeräte", "bemerkungen": "Bemerkungen" },
+  "options": {
+    "maschine": { "in ordnung": "in Ordnung", "fehlerhaft": "fehlerhaft", "nicht geprüft": "nicht geprüft" },
+    "ersatzteileDosiergeraete": { "Schlauch": "Schlauch", "Pumpe": "Pumpe", … }
+  }
+}
+```
+
+**Feld-Labels** stehen unter `{Entity}.fields.{field}` — das ist die Quelle für
+die Beschriftungen in Detail-, Edit- und List-View. Zu beachten: Optionswerte
+können Leerzeichen und Umlaute enthalten (`"nicht geprüft"`), taugen also nicht
+als Objektschlüssel-Annahme „slug-artig".
 
 I18n-Scopes umfassen u. a. `Global`, `User`, `Preferences`, `Stream`,
 `CLieferscheine`, `CPruefberichte` — Labels also pro Entität abrufbar.
 Fallback-Kette für die Engine: `{Entity}.options.{field}` → `Global.options.{field}` → Rohwert.
 
+## Layout- und Datensatzformat (Grundlage Phase 2)
+
+**`detail`-Layout** — Array von Panels, jedes mit `rows`; eine Row ist ein Array
+von Zellen `{ name }`. Leere Zellen erscheinen als `false` (in den vorliegenden
+Fixtures nicht genutzt, aber vom Renderer abzufangen):
+
+```jsonc
+[ { "rows": [
+      [ { "name": "cKundenbaustelle" }, { "name": "cLieferschein" } ],
+      [ { "name": "chargeGeraet" }, { "name": "artikel" }, { "name": "emailAddress" } ]
+] } ]
+```
+
+**`list`-Layout** — flaches Array von Spalten:
+
+```jsonc
+[ { "name": "name", "width": 60, "link": true, "align": "left" },
+  { "name": "pruefDatum" }, { "name": "status" }, { "name": "datumNaechstePruefung" } ]
+```
+
+**Datensatz** (`fixtures/record-CPruefberichte.json`) — bestätigt für Phase 2/4:
+
+- Links flach als `cLieferscheinId` / `cLieferscheinName`, `artikelId` / `artikelName`,
+  `assignedUserId` / `assignedUserName` ✅ (A7)
+- `linkMultiple` als `teamsIds` / `teamsNames`, `followersIds` / `followersNames`
+- `checklist`-Werte als **Array** (leer: `[]`)
+- `image` als `signatureImgId` / `signatureImgName`
+- zusätzlich: `versionNumber`, `deleted`, `isFollowed`, `streamUpdatedAt`
+
+Das `detail`-Layout referenziert mit `emailAddress` ein Feld, das in
+`entityDefs` als `notStorable` markiert ist — der Renderer darf also nicht
+annehmen, dass jedes Layout-Feld beschreibbar ist.
+
 ## Offene Punkte / Entscheidungen für Phase 1
 
 1. ✅ **Entitäten-Scope festgelegt:** `CPruefberichte` + `CEmayrQrs`
    (siehe A11). Ersetzt „Eingangsrechnung" aus PLAN.md.
-2. **A9 nachproben** mit dem umgebauten Schreibtest (echte Wertänderung +
-   veraltete Version). Erwartet: HTTP 409. Ergebnis hier eintragen, insbesondere
-   ob `versionNumber` im GET-Response mitkommt.
-3. **Datenlage für Phase 4:** `CPruefberichte` enthält aktuell **1 Datensatz**.
+2. **A9 nachproben** mit dem typbewussten Schreibtest. Erwartet: HTTP 409 in
+   Schritt 2. Das ist der letzte offene Nachweis der Phase 0.
+3. **Datenlage für Phase 4:** Beide Scope-Entitäten enthalten **je 1 Datensatz**.
    Das Akzeptanzkriterium „≥ 1.000 Datensätze paginiert repliziert" ist so nicht
    erfüllbar. Optionen: Testdaten in der Instanz anlegen, eine datenreichere
-   Entität in den Scope nehmen, oder das Kriterium bewusst absenken.
-   Zugleich bleibt damit das `maxSize`-Limit ungeklärt (bis dahin 200).
-4. **JSON-Fixtures** aus dem lokalen Lauf ins Repo übernehmen — sie sind die
-   Grundlage der Phase-2-Engine und der Phase-3-Unit-Tests.
-5. **Aus den Fixtures nachtragen** (oder per erneutem Probe-Lauf mit der
-   aktuellen Skriptversion automatisch): verwendete `conditionGroup`-Operatoren,
-   Inhalt von `logicDefs` (A8), Übersetzungsort der `checklist`-Options.
+   Entität ergänzen (`CArtikel`, `CEmayrTracks`?), oder das Kriterium bewusst
+   absenken. Zugleich bleibt damit die reale Seitengröße ungeklärt.
+4. ✅ **JSON-Fixtures liegen im Repo.**
+5. ✅ **Aus den Fixtures ausgewertet:** Operatoren, `logicDefs`, Übersetzungsort
+   der `checklist`-Options, Layout- und Datensatzformat (siehe oben).
+
+### Konsequenzen für die Folgephasen
+
+- **Phase 2:** Registry um `checklist` erweitern; `image` und `barcode` über den
+  Fallback; `currency` streichen. Labels aus `{Entity}.fields`, Optionen aus
+  `{Entity}.options`.
+- **Phase 3:** Evaluator liest `logicDefs` (nicht nur `clientDefs.dynamicLogic`)
+  und muss `and, or, equals, has, in, isEmpty, isNotEmpty, isTrue, isFalse`
+  beherrschen — `has` auf Array-Werten.
+- **Phase 5:** `versionNumber` kommt mit dem Datensatz und wandert als
+  `baseVersionNumber` in die Outbox. Konflikte sind nur bei echten
+  Wertänderungen zu erwarten (Server vergleicht feldbezogen).
