@@ -10561,7 +10561,7 @@
         "number": "views/fields/foreign-varchar",
         "bool": "views/fields/foreign-bool",
         "email": "views/fields/foreign-email",
-        "phone": "***PII***",
+        "phone": "views/fields/foreign-phone",
         "array": "views/fields/foreign-array",
         "checklist": "views/fields/foreign-checklist",
         "multiEnum": "views/fields/foreign-multi-enum",

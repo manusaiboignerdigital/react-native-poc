@@ -1,4 +1,4 @@
-Probe gegen http://emayr.local/api/v1 — 2026-07-26T20:19:31.339Z
+Probe gegen http://emayr.local/api/v1 — 2026-07-26T21:12:55.404Z
 
 == A3: GET App/user ==
   -> fixtures/app-user.json geschrieben
@@ -37,29 +37,32 @@ Probe gegen http://emayr.local/api/v1 — 2026-07-26T20:19:31.339Z
   ERGEBNIS A4: Layout-Pfad = api/v1/{Entity}/layout/{name}
 
 == A5/A6/A7: Listen, Pagination, where auf modifiedAt ==
-  CPruefberichte: total=1
+  CPruefberichte: total=10001
   CEmayrQrs: total=1
-  Testentität: CPruefberichte (1 Datensätze)
-  GET CPruefberichte maxSize=5: total=1, geliefert=1
+  Testentität: CPruefberichte (10001 Datensätze)
+  GET CPruefberichte maxSize=5: total=10001, geliefert=5
   -> fixtures/list-CPruefberichte.json geschrieben
   A7: assignedUserId=true assignedUserName=true teamsIds=true teamsNames=true
-  maxSize=200 -> HTTP 200, geliefert=1
-  maxSize=500 -> HTTP 200, geliefert=1
-  maxSize=1000 -> HTTP 200, geliefert=1
-  maxSize=5000 -> HTTP 200, geliefert=1
-  ERGEBNIS A5: höchstes akzeptiertes maxSize = 5000 (Achtung: nur 1 Datensätze vorhanden — Seitengröße nicht real ausgereizt)
-  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 20:19:31] -> total=1
+  maxSize=200 -> HTTP 200, geliefert=200
+  maxSize=500 -> HTTP 200, geliefert=500
+  maxSize=1000 -> HTTP 200, geliefert=1000
+  maxSize=5000 -> HTTP 200, geliefert=5000
+  ERGEBNIS A5: höchstes akzeptiertes maxSize = 5000
+  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 21:12:58] -> total=1
   -> fixtures/list-CPruefberichte-delta.json geschrieben
 
 == A9: Optimistic Concurrency (versionNumber) ==
   Metadata entityDefs.CPruefberichte.optimisticConcurrencyControl = true
   -> fixtures/record-CPruefberichte.json geschrieben
-  versionNumber im GET-Response vorhanden: true (Wert: 15)
-  Testfeld: maschine (Ausgangswert: "in ordnung")
+  versionNumber im GET-Response vorhanden: true (Wert: 26)
+  Kandidatenfelder: maschine, description, bemerkungen, sonstiges, sonstigesErsatzteileSpraystation, anmerkungDosierung, anmerkungMaschine, dosierung, ersatzteile, ersatzteileDosiergeraete, ersatzteileSpraystation, ersatzteileAbfuellstation
+  Testfeld: maschine (Typ enum, Ausgangswert "fehlerhaft")
   HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.
-  [1] PUT maschine=A mit versionNumber=15 -> HTTP 400
-      X-Status-Reason: Field validation failure; entityType: CPruefberichte, field: maschine, type: valid.
-  ERGEBNIS A9: unklar — Schreibtest fehlgeschlagen, Datensatz unverändert.
+  [1] PUT maschine="in ordnung" mit X-Version-Number=26 -> HTTP 200
+      versionNumber im PUT-Response: 27
+  [2] PUT maschine="nicht geprüft" (abweichend) mit veraltetem X-Version-Number=26 -> HTTP 409
+  ERGEBNIS A9: Optimistic Concurrency AKTIV — Konflikt wird als HTTP 409 gemeldet (Phase 5 kann darauf bauen).
+  [3] Aufräumen: maschine auf "fehlerhaft" zurück -> HTTP 200
 
 == A10: CORS von http://localhost:5173 ==
   OPTIONS Preflight -> HTTP 200, Access-Control-Allow-Origin: (fehlt)

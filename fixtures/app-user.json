@@ -927,14 +927,14 @@
     "displayListViewRecordCount": true,
     "emailAddressIsOptedOutByDefault": true,
     "emailAddressLookupEntityTypeList": [
-      "***PII***"
+      "User"
     ],
     "emailAddressMaxCount": 10,
     "emailAddressSelectEntityTypeList": [
-      "***PII***",
-      "***PII***",
-      "***PII***",
-      "***PII***"
+      "User",
+      "Contact",
+      "Lead",
+      "Account"
     ],
     "emailForceUseExternalClient": true,
     "emailKeepParentTeamsEntityList": [],
@@ -990,7 +990,7 @@
     "phoneNumberMaxCount": 10,
     "phoneNumberNumericSearch": true,
     "phoneNumberPreferredCountryList": [
-      "***PII***"
+      "at"
     ],
     "popupNotificationsCheckInterval": 15,
     "portalStreamEmailNotifications": true,
