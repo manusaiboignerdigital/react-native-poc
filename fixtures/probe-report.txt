@@ -1,4 +1,4 @@
-Probe gegen http://emayr.local/api/v1 — 2026-07-26T14:13:14.220Z
+Probe gegen http://emayr.local/api/v1 — 2026-07-26T20:19:31.339Z
 
 == A3: GET App/user ==
   -> fixtures/app-user.json geschrieben
@@ -12,9 +12,12 @@ Probe gegen http://emayr.local/api/v1 — 2026-07-26T14:13:14.220Z
   Entitäten gesamt: 22
   Custom-Entitäten (C-Präfix, Kandidaten für A11): CArtikel, CEmayrQrs, CEmayrTracks, CKundenbaustellen, CLieferscheine, CPruefberichte
   Entitäten mit clientDefs.dynamicLogic (A8): CEmayrQrs
+  logicDefs vorhanden, Keys: EmailAccount, EmailFilter, Preferences, Template, User, CPruefberichte, CEmayrQrs
   -> fixtures/dynamic-logic-examples.json geschrieben
+  Verwendete conditionGroup-Operatoren: and, equals, has, in, isEmpty, isFalse, isNotEmpty, isTrue, or
   Feldtypen CPruefberichte: varchar(6), text(2), datetime(3), link(6), linkMultiple(1), date(3), enum(4), checklist(3), image(1), email(1), bool(2)
   Feldtypen CEmayrQrs: varchar(4), text(1), datetime(3), link(3), linkMultiple(1), bool(1), barcode(1)
+  Feldtypen instanzweit: varchar(78), link(58), bool(51), datetime(39), enum(32), linkMultiple(23), text(17), int(16), jsonObject(11), float(10), linkParent(9), array(8), jsonArray(7), checklist(5), password(4), date(4), enumInt(4), wysiwyg(4), autoincrement(3), foreign(3), email(3), multiEnum(2), personName(2), phone(2), image(2), id(1), file(1), attachmentMultiple(1), base(1), colorpicker(1), url(1), address(1), map(1), barcode(1)
 
 == A2: GET I18n ==
   -> fixtures/i18n.json geschrieben
@@ -34,17 +37,29 @@ Probe gegen http://emayr.local/api/v1 — 2026-07-26T14:13:14.220Z
   ERGEBNIS A4: Layout-Pfad = api/v1/{Entity}/layout/{name}
 
 == A5/A6/A7: Listen, Pagination, where auf modifiedAt ==
+  CPruefberichte: total=1
+  CEmayrQrs: total=1
+  Testentität: CPruefberichte (1 Datensätze)
   GET CPruefberichte maxSize=5: total=1, geliefert=1
   -> fixtures/list-CPruefberichte.json geschrieben
   A7: assignedUserId=true assignedUserName=true teamsIds=true teamsNames=true
-  maxSize=500 akzeptiert, geliefert=1 (Obergrenze beachten)
-  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 14:13:14] -> total=1
+  maxSize=200 -> HTTP 200, geliefert=1
+  maxSize=500 -> HTTP 200, geliefert=1
+  maxSize=1000 -> HTTP 200, geliefert=1
+  maxSize=5000 -> HTTP 200, geliefert=1
+  ERGEBNIS A5: höchstes akzeptiertes maxSize = 5000 (Achtung: nur 1 Datensätze vorhanden — Seitengröße nicht real ausgereizt)
+  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 20:19:31] -> total=1
   -> fixtures/list-CPruefberichte-delta.json geschrieben
 
 == A9: Optimistic Concurrency (versionNumber) ==
+  Metadata entityDefs.CPruefberichte.optimisticConcurrencyControl = true
   -> fixtures/record-CPruefberichte.json geschrieben
-  versionNumber im Datensatz vorhanden: false (Wert: undefined)
-  PUT mit aktueller versionNumber -> HTTP 200
+  versionNumber im GET-Response vorhanden: true (Wert: 15)
+  Testfeld: maschine (Ausgangswert: "in ordnung")
+  HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.
+  [1] PUT maschine=A mit versionNumber=15 -> HTTP 400
+      X-Status-Reason: Field validation failure; entityType: CPruefberichte, field: maschine, type: valid.
+  ERGEBNIS A9: unklar — Schreibtest fehlgeschlagen, Datensatz unverändert.
 
 == A10: CORS von http://localhost:5173 ==
   OPTIONS Preflight -> HTTP 200, Access-Control-Allow-Origin: (fehlt)

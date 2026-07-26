@@ -1,0 +1,78 @@
+[
+  {
+    "rows": [
+      [
+        {
+          "name": "cKundenbaustelle"
+        },
+        {
+          "name": "cLieferschein"
+        }
+      ],
+      [
+        {
+          "name": "chargeGeraet"
+        },
+        {
+          "name": "artikel"
+        },
+        {
+          "name": "emailAddress"
+        }
+      ],
+      [
+        {
+          "name": "dosierung"
+        },
+        {
+          "name": "maschine"
+        },
+        {
+          "name": "pruefDatum"
+        },
+        {
+          "name": "datumNaechstePruefung"
+        }
+      ],
+      [
+        {
+          "name": "anmerkungDosierung"
+        },
+        {
+          "name": "anmerkungMaschine"
+        }
+      ],
+      [
+        {
+          "name": "ersatzteile"
+        }
+      ],
+      [
+        {
+          "name": "ersatzteileDosiergeraete"
+        },
+        {
+          "name": "ersatzteileAbfuellstation"
+        },
+        {
+          "name": "ersatzteileSpraystation"
+        }
+      ],
+      [
+        {
+          "name": "sonstiges"
+        },
+        {
+          "name": "sonstigesErsatzteileSpraystation"
+        }
+      ],
+      [
+        {
+          "name": "bemerkungen"
+        }
+      ]
+    ],
+    "style": "default",
+    "label": "Overview"
+  }
+]

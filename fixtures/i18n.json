@@ -1,0 +1,2164 @@
+{
+  "DashletOptions": {
+    "fields": {
+      "title": "Titel",
+      "dateFrom": "Von Datum",
+      "dateTo": "Bis Datum",
+      "autorefreshInterval": "Aktualisierungsintervall",
+      "displayRecords": "Sätze anzeigen",
+      "isDoubleHeight": "Zweifache Höhe",
+      "mode": "Modus",
+      "enabledScopeList": "Was soll angezeigt werden",
+      "users": "Benutzer",
+      "entityType": "Entitätstyp",
+      "primaryFilter": "Primärfilter",
+      "boolFilterList": "Zusätzliche Filter",
+      "sortBy": "Sortiert nach",
+      "sortDirection": "Sortierrichtung",
+      "expandedLayout": "Layout",
+      "skipOwn": "Eigene Einträge nicht zeigen",
+      "url": "URL",
+      "dateFilter": "Datumsfilter",
+      "text": "Text",
+      "folder": "Ordner",
+      "includeShared": "Gemeinsame miteinbeziehen",
+      "futureDays": "Nächste X Tage",
+      "useLastStage": "Gruppierung nach der zuletzt erreichten Verkaufsphase"
+    },
+    "options": {
+      "mode": {
+        "agendaWeek": "Woche (Agenda)",
+        "basicWeek": "Woche",
+        "month": "Monat",
+        "basicDay": "Tag",
+        "agendaDay": "Tag (Agenda)",
+        "timeline": "Zeitachse"
+      },
+      "sortDirection": {
+        "asc": "Aufsteigend",
+        "desc": "Absteigend"
+      }
+    },
+    "messages": {
+      "selectEntityType": "Wählen Sie Entitätstyp in Dashlet-Optionen."
+    },
+    "tooltips": {
+      "skipOwn": "Von Ihrem Benutzerkonto durchgeführte Aktionen werden nicht angezeigt."
+    },
+    "otherFields": {
+      "soft": "Weiche Farbe",
+      "small": "Kleiner Font"
+    }
+  },
+  "EmailAccount": {
+    "fields": {
+      "name": "Name",
+      "status": "Status",
+      "host": "Host",
+      "username": "Benutzername",
+      "password": "***REDACTED***",
+      "port": "Port",
+      "monitoredFolders": "Überwachte Ordner",
+      "security": "Sicherheit",
+      "fetchSince": "Holen seit",
+      "emailAddress": "***PII***",
+      "sentFolder": "Gesendet Ordner",
+      "storeSentEmails": "Gesendete E-Mails speichern",
+      "keepFetchedEmailsUnread": "Geholte E-Mails als ungelesen behalten",
+      "emailFolder": "In Ordner ablegen",
+      "connectedAt": "Verbunden mit",
+      "useImap": "E-Mails abholen",
+      "useSmtp": "***REDACTED***",
+      "smtpHost": "***REDACTED***",
+      "smtpPort": "***REDACTED***",
+      "smtpAuth": "***REDACTED***",
+      "smtpSecurity": "***REDACTED***",
+      "smtpAuthMechanism": "***REDACTED***",
+      "smtpUsername": "***REDACTED***",
+      "smtpPassword": "***REDACTED***"
+    },
+    "links": {
+      "filters": "Filter",
+      "emails": "E-Mails"
+    },
+    "options": {
+      "status": {
+        "Active": "Aktiv",
+        "Inactive": "Inaktiv"
+      },
+      "smtpAuthMechanism": {
+        "plain": "PLAIN",
+        "login": "LOGIN",
+        "crammd5": "CRAM-MD5"
+      },
+      "smtpSecurity": {
+        "SSL": "SSL/TLS",
+        "TLS": "STARTTLS"
+      },
+      "security": {
+        "SSL": "SSL/TLS",
+        "TLS": "STARTTLS"
+      }
+    },
+    "labels": {
+      "Create EmailAccount": "E-Mail Konto erstellen",
+      "IMAP": "IMAP",
+      "Main": "Hauptteil",
+      "Test Connection": "Verbindung überprüfen",
+      "Send Test Email": "Test E-Mail senden",
+      "SMTP": "***REDACTED***"
+    },
+    "presetFilters": {
+      "active": "Aktiv"
+    },
+    "messages": {
+      "couldNotConnectToImap": "Kann keine Verbindung zum IMAP Server herstellen",
+      "connectionIsOk": "Verbindung ist in Ordnung",
+      "imapNotConnected": "Konnte keine Verbindung zu [IMAP account](#EmailAccount/view/{id}) herstellen."
+    },
+    "tooltips": {
+      "useSmtp": "***REDACTED***",
+      "emailAddress": "***PII***",
+      "monitoredFolders": "Mehrere Ordner sollten durch ein Komma getrennt werden.\n\nSie können einen 'Gesendet' Ordner hinzufügen, um E-Mails zu synchronisieren, die von einem externen Programm gesendet wurden.",
+      "storeSentEmails": "Gesendete E-Mail werden auf einem IMAP Server gespeichert. Die E-Mail Adresse muss jene sein, von der die E-Mail gesendet wurde."
+    }
+  },
+  "EmailFilter": {
+    "fields": {
+      "from": "Von",
+      "to": "An",
+      "subject": "Betreff",
+      "bodyContains": "E-Mail Inhalt",
+      "bodyContainsAll": "E-Mail-Text enthält alle",
+      "action": "Aktion",
+      "isGlobal": "Ist global",
+      "emailFolder": "Ordner",
+      "groupEmailFolder": "E-Mail Gruppenordner",
+      "markAsRead": "Als gelesen markieren",
+      "skipNotification": "Benachrichtigung überspringen"
+    },
+    "links": {
+      "emailFolder": "Ordner",
+      "groupEmailFolder": "E-Mail Gruppenordner"
+    },
+    "labels": {
+      "Create EmailFilter": "E-Mail Filter erstellen",
+      "Emails": "E-Mails"
+    },
+    "options": {
+      "action": {
+        "None": "Keine",
+        "Skip": "Ignorieren",
+        "Move to Folder": "In Ordner ablegen",
+        "Move to Group Folder": "In Gruppenordner ablegen"
+      }
+    },
+    "tooltips": {
+      "name": "Ein Name für den Filter",
+      "subject": "Verwenden Sie einen Platzhalter *: \n\n * `text*` - beginnt mit Text,\n * `*text*` - enthält Text,\n * `*text` - endet mit Text.",
+      "bodyContains": "Der Text der E-Mail enthält eines der angegebenen Worte oder Phrasen.",
+      "bodyContainsAll": "Ein E-Mail-Text enthält alle angegebenen Wörter oder Ausdrücke.",
+      "from": "Die E-Mails werden von der angegebenen Adresse gesendet. Bitte leer lassen, wenn nicht benötigt. Sie können den Platzhalter * verwenden.",
+      "to": "Die E-Mails werden an die angegebenen Adressen gesendet. Bitte leer lassen, wenn nicht benötigt. Sie können den Platzhalter * verwenden.",
+      "isGlobal": "Wendet diesen Filter auf alle eingehenden E-Mails im System an."
+    }
+  },
+  "Global": {
+    "scopeNames": {
+      "Note": "Notiz",
+      "User": "Benutzer",
+      "Team": "Team",
+      "EmailAccount": "Persönliches E-Mail Konto",
+      "EmailAccountScope": "Persönliches E-Mail Konto",
+      "OutboundEmail": "Ausgehende E-Mail",
+      "Dashboard": "Dashboard",
+      "Stream": "Protokollierung",
+      "Template": "Vorlage",
+      "EmailFilter": "E-Mail Filter",
+      "Attachment": "Anhang",
+      "EmailFolder": "E-Mail Ordner",
+      "GroupEmailFolder": "E-Mail Gruppenordner",
+      "PortalUser": "Portal Benutzer",
+      "ApiUser": "API Benutzer",
+      "ActionHistoryRecord": "Aktionsverlaufseintrag",
+      "LastViewed": "Zuletzt angezeigt",
+      "Settings": "Einstellungen",
+      "FieldManager": "Feld Manager",
+      "Integration": "Integration",
+      "LayoutManager": "Layout Manager",
+      "EntityManager": "Entität Manager",
+      "Export": "Exportieren",
+      "DynamicLogic": "Dynamische Logik",
+      "DashletOptions": "Dashlet Optionen",
+      "Admin": "Admin",
+      "Global": "Global",
+      "Preferences": "Benutzereinstellungen",
+      "AuthFailLogRecord": "Auth-Fehlerprotokoll Datensatz",
+      "Currency": "Währung",
+      "Mass Action": "Massenaktionen",
+      "GlobalStream": "Globales Ereignis",
+      "Target": "Ziel",
+      "Calendar": "Kalender",
+      "Activities": "Aktivitäten",
+      "CPruefberichte": "Prüfbericht",
+      "CLieferscheine": "Lieferschein",
+      "CKundenbaustellen": "Kundenbaustelle",
+      "CArtikel": "Artikel",
+      "CEmayrQrs": "QR-Code",
+      "CEmayrTracks": "QR-Code-Tracking"
+    },
+    "scopeNamesPlural": {
+      "Note": "Notiz",
+      "User": "Benutzer",
+      "Team": "Teams",
+      "EmailAccount": "Persönliche E-Mail Konten",
+      "EmailAccountScope": "Persönliche E-Mail Konten",
+      "OutboundEmail": "Ausgehende E-Mails",
+      "Dashboard": "Dashboard",
+      "Stream": "Protokollierung",
+      "Template": "Vorlagen",
+      "EmailFilter": "E-Mail Filter",
+      "Attachment": "Anhänge",
+      "EmailFolder": "E-Mail Ordner",
+      "GroupEmailFolder": "E-Mail Gruppenordner",
+      "PortalUser": "Portal Benutzer",
+      "ApiUser": "API Benutzer",
+      "ActionHistoryRecord": "Aktionsverlauf",
+      "LastViewed": "Zuletzt angezeigt",
+      "AuthFailLogRecord": "Auth-Fehlerprotokoll",
+      "Currency": "Währung",
+      "GlobalStream": "Globale Ereignisse",
+      "Target": "Zielkontakte",
+      "Calendar": "Kalender",
+      "Activities": "Aktivitäten",
+      "CPruefberichte": "Prüfberichte",
+      "CLieferscheine": "Lieferscheine",
+      "CKundenbaustellen": "Kundenbaustellen",
+      "CArtikel": "Artikel",
+      "CEmayrQrs": "QR-Codes",
+      "CEmayrTracks": "QR-Code-Trackings"
+    },
+    "labels": {
+      "Previous Page": "Vorherige Seite",
+      "Next Page": "Nächste Seite",
+      "First Page": "Erste Seite",
+      "Last Page": "Letzte Seite",
+      "Page": "Seite",
+      "Sort": "Sortieren",
+      "Column Resize": "Spaltengröße ändern",
+      "Misc": "Verschiedenes",
+      "General": "Allgemein",
+      "Merge": "Zusammenführen",
+      "None": "Kein(e)",
+      "Home": "Home",
+      "by": "nach",
+      "Proceed": "Fortfahren",
+      "Saved": "Gespeichert.",
+      "Error": "Fehler",
+      "Select": "Auswählen",
+      "Not valid": "Ungültig",
+      "Please wait...": "Bitte warten...",
+      "Please wait": "Bitte warten",
+      "Attached": "Beigefügt",
+      "Loading...": "Lade...",
+      "Uploading...": "Lade hoch...",
+      "Sending...": "Wird gesendet...",
+      "Send": "Senden",
+      "Merged": "Zusammengeführt",
+      "Removed": "Gelöscht",
+      "Posted": "Gesendet",
+      "Linked": "Verknüpft",
+      "Unlinked": "Verknüpfung gelöscht",
+      "Done": "Fertig",
+      "Access denied": "Zugriff verweigert",
+      "Not found": "Nicht gefunden",
+      "Access": "Berechtigungen",
+      "Timeout": "Zeitüberschreitung",
+      "No internet": "Keine Internetverbindung",
+      "Network error": "Network error",
+      "Are you sure?": "Sind Sie sicher?",
+      "Record has been removed": "Datensatz wurde gelöscht",
+      "Wrong username/password": "***REDACTED***",
+      "Post cannot be empty": "Notiz darf nicht leer sein",
+      "Username can not be empty!": "Der Benutzername darf nicht leer sein!",
+      "Cache is not enabled": "Cache ist nicht aktiviert",
+      "Cache has been cleared": "Der Cache wurde geleert",
+      "Rebuild has been done": "Wiederherstellen wurde durchgeführt",
+      "Return to Application": "Zurück zur Applikation",
+      "Modified": "Verändert",
+      "Created": "Erstellt",
+      "Create": "Erstellen",
+      "create": "erstellen",
+      "Scheduled": "Geplant",
+      "Overview": "Überblick",
+      "Details": "Details",
+      "Add Field": "Feld hinzufügen",
+      "Add Dashlet": "Dashlet hinzufügen",
+      "Filter": "Filter",
+      "Edit Dashboard": "Dashboard bearbeiten",
+      "Add": "Hinzufügen",
+      "Add Item": "Eintrag hinzufügen",
+      "Reset": "Zurücksetzen",
+      "Menu": "Menü",
+      "More": "Mehr",
+      "Search": "Suchen",
+      "Only My": "Nur meine",
+      "Open": "Offen",
+      "Admin": "Admin",
+      "About": "Über",
+      "Refresh": "Aktualisieren",
+      "Remove": "Löschen",
+      "Restore": "Wiederherstellen",
+      "Options": "Optionen",
+      "Username": "Benutzername",
+      "Password": "***REDACTED***",
+      "Login": "Anmelden",
+      "Log Out": "Abmelden",
+      "Log in": "Anmelden",
+      "Log in as": "Anmelden als",
+      "Sign in": "Anmelden",
+      "Preferences": "Benutzereinstellungen",
+      "State": "Bundesland/Kanton",
+      "Street": "Straße",
+      "Country": "Land",
+      "City": "Ort",
+      "PostalCode": "PLZ",
+      "Star": "Stern setzen",
+      "Unstar": "Stern entfernen",
+      "Starred": "Mit Stern markiert",
+      "Followed": "Abonniert",
+      "Follow": "Abonnieren",
+      "Followers": "Abonnenten",
+      "Clear Local Cache": "Lokalen Cache leeren",
+      "Actions": "Aktionen",
+      "Delete": "Löschen",
+      "Update": "Aktualisieren",
+      "Save": "Speichern",
+      "Edit": "Bearbeiten",
+      "View": "Ansehen",
+      "Cancel": "Abbrechen",
+      "Apply": "Anwenden",
+      "Unlink": "Link entfernen",
+      "Mass Update": "Massenänderung",
+      "Export": "Exportieren",
+      "No Data": "Keine Daten",
+      "No Access": "Kein Zugriff",
+      "All": "Alle",
+      "Active": "Aktiv",
+      "Inactive": "Inaktiv",
+      "Write your comment here": "Notiz hier einfügen",
+      "Post": "Absenden",
+      "Stream": "Protokollierung",
+      "Show more": "Mehr anzeigen",
+      "Dashlet Options": "Dashlet Optionen",
+      "Full Form": "Komplettes Formular",
+      "Insert": "Einfügen",
+      "Person": "Person",
+      "First Name": "Vorname",
+      "Last Name": "Nachname",
+      "Middle Name": "Zweiter Vorname",
+      "Original": "Original",
+      "You": "Sie",
+      "you": "Sie",
+      "change": "ändern",
+      "Change": "Ändern",
+      "Primary": "Primär",
+      "Save Filter": "Filter speichern",
+      "Remove Filter": "Entferne Filter",
+      "Ready": "Bereit",
+      "Administration": "Administration",
+      "Run Import": "Import durchführen",
+      "Duplicate": "Duplizieren",
+      "Notifications": "Benachrichtigungen",
+      "Mark all read": "Alle als gelesen markieren",
+      "See more": "Mehr anzeigen",
+      "Today": "Heute",
+      "Tomorrow": "Morgen",
+      "Yesterday": "Gestern",
+      "Now": "Jetzt",
+      "Submit": "Ausführen",
+      "Close": "Schließen",
+      "Yes": "Ja",
+      "No": "Nein",
+      "Select All Results": "Alle auswählen",
+      "Value": "Wert",
+      "Current version": "Aktuelle Version",
+      "List View": "Listenansicht",
+      "Tree View": "Baumansicht",
+      "Unlink All": "Alle Links entfernen",
+      "Total": "Gesamt",
+      "Print": "Drucken",
+      "Print to PDF": "Als PDF drucken",
+      "Default": "Standard",
+      "Number": "Nummer",
+      "From": "Von",
+      "To": "Bis",
+      "Create Post": "Nachricht erstellen",
+      "Previous Entry": "Vorheriger Eintrag",
+      "Next Entry": "Nächster Eintrag",
+      "View List": "Liste ansehen",
+      "Attach File": "Datei anhängen",
+      "Skip": "überspringen",
+      "Attribute": "Attribut",
+      "Function": "Funktion",
+      "Self-Assign": "sich selbst zuweisen",
+      "Self-Assigned": "Selbst zugewiesen",
+      "Expand": "Erweitern",
+      "Collapse": "Zusammenklappen",
+      "Expanded": "Erweitert",
+      "Collapsed": "Zusammengeklappt",
+      "Top Level": "Oberste Ebene",
+      "New notifications": "Neue Benachrichtigungen",
+      "Manage Categories": "Kategorien verwalten",
+      "Manage Folders": "Ordner verwalten",
+      "Convert to": "Umgewandelt zu",
+      "View Personal Data": "Personenbezogene Daten anzeigen",
+      "Personal Data": "Personenbezogene Daten",
+      "Erase": "Löschen",
+      "View Followers": "Abonnenten anzeigen",
+      "Convert Currency": "Währung umrechnen",
+      "View on Map": "Ansicht auf Karte",
+      "Preview": "Vorschau",
+      "Move Over": "Verschiebe nach",
+      "Up": "Hoch",
+      "Save & Continue Editing": "Speichern & weiter bearbeiten",
+      "Save & New": "Speichern & Neu",
+      "Field": "Feld",
+      "Fields": "Felder",
+      "Resolution": "Auflösung",
+      "Resolve Conflict": "Löse Konflikt",
+      "Download": "Download",
+      "Global Search": "Globale Suche",
+      "Navigation Panel": "Navigationsleiste anzeigen",
+      "Copy to Clipboard": "In Zwischenablage kopieren",
+      "Copied to clipboard": "In Zwischenablage kopiert",
+      "Audit Log": "Audit-Protokoll",
+      "View Audit Log": "Audit-Protokoll anzeigen",
+      "View User Access": "Benutzerzugriff anzeigen",
+      "Reacted": "Reagierte",
+      "Reaction Removed": "Reaktion entfernt",
+      "Reactions": "Reaktionen",
+      "Schedule": "Zeitplan",
+      "Log": "Log",
+      "Scheduler": "Scheduler",
+      "Create InboundEmail": "Eingehende E-Mail erstellen",
+      "Activities": "Aktivitäten",
+      "History": "Verlauf",
+      "Attendees": "Teilnehmer",
+      "Schedule Meeting": "Meeting planen",
+      "Schedule Call": "Anruf planen",
+      "Compose Email": "E-Mail erstellen",
+      "Log Meeting": "Meeting erfassen",
+      "Log Call": "Anruf erfassen",
+      "Archive Email": "E-Mail archivieren",
+      "Create Task": "Neue Aufgabe",
+      "Tasks": "Aufgaben"
+    },
+    "messages": {
+      "pleaseWait": "Bitte warten...",
+      "loading": "Lade...",
+      "saving": "Speichere...",
+      "confirmLeaveOutMessage": "Sind Sie sicher, dass Sie das Formular verlassen wollen?",
+      "notModified": "Sie haben keine Änderungen am Datensatz vorgenommen",
+      "duplicate": "Der Datensatz, den Sie erstellen wollen, könnte eine Dublette sein",
+      "dropToAttach": "Anhang hier ablegen",
+      "pageNumberIsOutOfBound": "Die Seitenzahl liegt außerhalb des Bereichs",
+      "fieldUrlExceedsMaxLength": "Enkodierte URL überschreitet die maximale Länge von {maxLength}",
+      "fieldNotMatchingPattern": "{field} stimmt nicht mit dem Muster `{pattern}` überein",
+      "fieldNotMatchingPattern$noBadCharacters": "{field} enthält nicht erlaubte Zeichen",
+      "fieldNotMatchingPattern$noAsciiSpecialCharacters": "{field} sollte keine ASCII-Sonderzeichen enthalten",
+      "fieldNotMatchingPattern$latinLetters": "{field} darf nur lateinische Buchstaben enthalten",
+      "fieldNotMatchingPattern$latinLettersDigits": "{field} darf nur lateinische Buchstaben und Ziffern enthalten",
+      "fieldNotMatchingPattern$latinLettersDigitsWhitespace": "{field} darf nur lateinische Buchstaben, Ziffern und Leerzeichen enthalten",
+      "fieldNotMatchingPattern$latinLettersWhitespace": "{field} darf nur lateinische Buchstaben und Leerzeichen enthalten",
+      "fieldNotMatchingPattern$digits": "{field} darf nur Ziffern enthalten",
+      "fieldNotMatchingPattern$uriOptionalProtocol": "{field} muss eine gültige URL sein",
+      "fieldNotMatchingPattern$phoneNumberLoose": "{field} enthält Zeichen, die in einer Telefonnummer nicht erlaubt sind",
+      "fieldInvalid": "{field} ist ungültig",
+      "fieldIsRequired": "{field} wird benötigt",
+      "fieldPhoneInvalid": "{field} ist ungültig",
+      "fieldPhoneInvalidCode": "Ungültiger Ländercode",
+      "fieldPhoneTooShort": "{field} ist zu kurz",
+      "fieldPhoneTooLong": "{field} ist zu lang",
+      "fieldPhoneInvalidCharacters": "Nur Ziffern, lateinische Buchstaben und die Zeichen `-+_@:#().` sind erlaubt.",
+      "fieldPhoneExtensionTooLong": "Die Durchwahl sollte nicht länger sein als {maxLength}",
+      "fieldShouldBeEmail": "{field} muss eine gültige E-Mail sein",
+      "fieldShouldBeFloat": "{field} muss eine gültige Fließkomma Zahl sein",
+      "fieldShouldBeInt": "{field} muss eine gültige Ganzzahl sein",
+      "fieldShouldBeNumber": "{field} sollte eine gültige Zahl sein",
+      "fieldShouldBeDate": "{field} muss ein gültiges Datum sein",
+      "fieldShouldBeDatetime": "{field} muss ein gültiges Datum/Zeit Feld sein",
+      "fieldShouldAfter": "{field} muss nach {otherField} sein",
+      "fieldShouldBefore": "{field} muss vor {otherField} sein",
+      "fieldShouldBeBetween": "{field} muss zwischen {min} und {max} sein",
+      "fieldShouldBeLess": "{field} sollte nicht größer als {value} sein",
+      "fieldShouldBeGreater": "{field} sollte nicht kleiner sein als {value}",
+      "fieldBadPasswordConfirm": "***REDACTED***",
+      "fieldMaxFileSizeError": "Die Datei soll nicht größer als {max} Mb sein",
+      "fieldValueDuplicate": "Doppelter Wert",
+      "fieldIsUploading": "Hochladen läuft",
+      "fieldExceedsMaxCount": "Anzahl überschreitet die maximal zulässige Anzahl {maxCount}",
+      "barcodeInvalid": "{field} ist kein gültiger {type}",
+      "arrayItemMaxLength": "Artikel sollte nicht länger als {max} Zeichen sein",
+      "arrayInputNotEmpty": "Artikel wird eingegeben, aber nicht hinzugefügt",
+      "resetPreferencesDone": "Die Einstellungen wurden auf Standardwerte zurückgesetzt",
+      "confirmation": "Sind Sie sicher?",
+      "unlinkAllConfirmation": "Sind Sie sicher, dass Sie die Beziehungen zu allen verbundenen Datensätzen entfernen möchten?",
+      "resetPreferencesConfirmation": "Sind Sie sicher, dass Sie die Einstellungen auf Standardwerte zurücksetzen wollen?",
+      "removeRecordConfirmation": "Sind Sie sicher, dass Sie den Eintrag löschen wollen?",
+      "unlinkRecordConfirmation": "Sind Sie sicher, dass Sie die Beziehung zu dem verbundenen Datensatz entfernen möchten?",
+      "removeSelectedRecordsConfirmation": "Sind Sie sicher, dass Sie die ausgewählten Datensätze löschen möchten?",
+      "unlinkSelectedRecordsConfirmation": "Sind Sie sicher, dass Sie die Beziehungen zu ausgewählten Datensätzen  entfernen möchten?",
+      "massUpdateResult": "{count} Einträge wurden aktualisiert",
+      "massUpdateResultSingle": "{count} Eintrag wurde aktualisiert",
+      "recalculateFormulaConfirmation": "Sind Sie sicher, dass Sie Formel für ausgewählte Datensätze neu berechnen möchten?",
+      "noRecordsUpdated": "Es wurden keine Einträge aktualisiert",
+      "massRemoveResult": "{count} Einträge wurden gelöscht",
+      "massRemoveResultSingle": "{count} Eintrag wurde gelöscht",
+      "noRecordsRemoved": "Es wurden keine Einträge gelöscht",
+      "clickToRefresh": "Klicken, um zu aktualisieren",
+      "writeYourCommentHere": "Notiz hier einfügen",
+      "writeMessageToUser": "Nachricht an {user} schreiben",
+      "writeMessageToSelf": "Nachricht im eigenen Ereignisverlauf schreiben",
+      "typeAndPressEnter": "Tippen & Enter drücken",
+      "checkForNewNotifications": "Nach neuen Benachrichtigungen überprüfen",
+      "checkForNewNotes": "Nach neuen Ereignissen überprüfen",
+      "internalPost": "Beitrag kann nur von internen Benutzern gesehen werden",
+      "internalPostTitle": "Beitrag wird nur von internen Benutzern gesehen",
+      "done": "Fertig",
+      "notUpdated": "Nicht aktualisiert",
+      "confirmMassUpdate": "Sind Sie sicher, dass Sie eine Massenaktualisierung ausgewählter Datensätze durchführen wollen?",
+      "confirmMassFollow": "Sind Sie sicher, dass Sie die ausgewählten Datensätze abonnieren möchten?",
+      "confirmMassUnfollow": "Sind Sie sicher, dass Sie die ausgewählten Datensätze nicht mehr abonnieren möchten?",
+      "massFollowResult": "{count} Datensätze sind nun abonniert",
+      "massUnfollowResult": "{count} Datensätze werden nicht mehr abonniert",
+      "massFollowResultSingle": "{count} Datensätze sind nun abonniert",
+      "massUnfollowResultSingle": "{count} Datensätze sind nun nicht mehr abonniert",
+      "massFollowZeroResult": "Es wurde kein Datensatz abonniert",
+      "massUnfollowZeroResult": "Kein Datensatz wurde nicht mehr abonniert",
+      "erasePersonalDataConfirmation": "Überprüfte Felder werden dauerhaft gelöscht. Sind Sie sicher?",
+      "maintenanceModeError": "Die Anwendung befindet sich im Wartungsmodus.",
+      "maintenanceMode": "Die Anwendung befindet sich derzeit im Wartungsmodus. Nur Admin-Benutzer haben Zugriff.\n\nDer Wartungsmodus kann unter Administration → Einstellungen deaktiviert werden.",
+      "resolveSaveConflict": "Der Eintrag wurde bearbeitet. Um den Eintrag speichern zu können, müssen Sie den Konflikt beheben.",
+      "massPrintPdfMaxCountError": "Es kann nicht mehr als {maxCount} Datensätze gedruckt werden.",
+      "massActionProcessed": "Die Massenänderung wurde abgeschlossen.",
+      "validationFailure": "Fehler bei der Backend-Validierung.\n\nFeld: `{field}`\nValidierung: `{type}`",
+      "extensionLicenseInvalid": "Ungültige '{name}'-Erweiterungslizenz.",
+      "extensionLicenseExpired": "Das Abonnement der Lizenz für die Erweiterung '{name}' ist abgelaufen.",
+      "extensionLicenseSoftExpired": "Das Abonnement der Lizenz für die Erweiterung '{name}' ist abgelaufen.",
+      "confirmAppRefresh": "Die Anwendung wurde aktualisiert. Es wird empfohlen die Seite neu zu laden, um eine problemlose Funktionsweise sicherzustellen.",
+      "loggedOutLeaveOut": "Abgemeldet. Die Sitzung ist inaktiv. Nicht gespeicherte Formulardaten können nach dem Aktualisieren der Seite verloren gehen. Sie müssen eventuell eine Kopie erstellen.",
+      "noAccessToRecord": "Die Operation erfordert `{action}`-Zugriff auf den Datensatz.",
+      "noAccessToForeignRecord": "Die Operation erfordert `{action}`-Zugriff auf den fremden Datensatz.",
+      "noLinkAccess": "Kann nicht mit dem Datensatz {foreignEntityType} über den Link '{link}' verknüpft werden. Kein Zugriff.",
+      "cannotUnrelateRequiredLink": "Kann die Verknüpfung nicht lösen.",
+      "cannotRelateNonExisting": "Kann nicht mit einem nicht existierenden {foreignEntityType} Datensatz verknüpft werden.",
+      "cannotRelateForbidden": "Kann nicht mit verbotenem {foreignEntityType} Datensatz verknüpft werden. Zugriff auf `{action}` erforderlich.",
+      "cannotRelateForbiddenLink": "Kein Zugriff auf den Link '{link}'.",
+      "cannotLinkAlreadyLinked": "Ein bereits verknüpfter Datensatz kann nicht verknüpft werden.",
+      "error404": "Die von Ihnen angeforderte URL kann nicht verarbeitet werden.",
+      "error403": "Sie haben keinen Zugang zu diesem Bereich.",
+      "emptyMassUpdate": "Keine Felder für Massenänderungen verfügbar.",
+      "attemptIntervalFailure": "Der Vorgang ist während eines bestimmten Zeitintervalls nicht erlaubt. Warten Sie vor dem nächsten Versuch einige Zeit.",
+      "confirmRestoreFromAudit": "Die vorherigen Werte werden in ein Formular eingetragen. Dann können Sie den Datensatz speichern, um die vorherigen Werte wiederherzustellen.",
+      "starsLimitExceeded": "Die Anzahl der Sterne hat das Limit überschritten.",
+      "select2OrMoreRecords": "Wählen Sie 2 oder mehr Datensätze",
+      "selectNotMoreThanNumberRecords": "Wählen Sie nicht mehr als {number} Datensätze aus",
+      "selectAtLeastOneRecord": "Wählen Sie mindestens einen Datensatz aus",
+      "duplicateConflict": "Ein Datensatz existiert bereits.",
+      "cannotRemoveCategoryWithChildCategory": "Eine Kategorie, die eine untergeordnete Kategorie hat, kann nicht entfernt werden.",
+      "cannotRemoveNotEmptyCategory": "Eine nicht leere Kategorie kann nicht entfernt werden.",
+      "sameRecordIsAlreadyBeingEdited": "Der Datensatz wird bereits bearbeitet."
+    },
+    "boolFilters": {
+      "onlyMy": "Nur meine",
+      "onlyMyTeam": "Mein Team",
+      "followed": "Abonniert",
+      "shared": "Geteilt"
+    },
+    "presetFilters": {
+      "followed": "Abonniert",
+      "all": "Alle",
+      "starred": "Mit Stern markiert"
+    },
+    "massActions": {
+      "delete": "Löschen",
+      "remove": "Löschen",
+      "merge": "Zusammenführen",
+      "update": "Aktualisieren",
+      "massUpdate": "Massenänderung",
+      "unlink": "Link entfernen",
+      "export": "Exportieren",
+      "follow": "Abonnieren",
+      "unfollow": "Nicht mehr abonnieren",
+      "convertCurrency": "Währung umrechnen",
+      "recalculateFormula": "Formel neu berechnen",
+      "printPdf": "Als PDF drucken"
+    },
+    "fields": {
+      "name": "Name",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "middleName": "Zweiter Vorname",
+      "salutationName": "Anrede",
+      "assignedUser": "Zugewiesener Benutzer",
+      "assignedUsers": "Zugewiesene Benutzer",
+      "collaborators": "Mitarbeiter",
+      "emailAddress": "***PII***",
+      "emailAddressData": "***PII***",
+      "emailAddressIsOptedOut": "***PII***",
+      "emailAddressIsInvalid": "***PII***",
+      "assignedUserName": "Zugewiesener Benutzername",
+      "teams": "Teams",
+      "users": "Benutzer",
+      "createdAt": "Erstellt am",
+      "modifiedAt": "Geändert am",
+      "createdBy": "Erstellt von",
+      "modifiedBy": "Geändert von",
+      "streamUpdatedAt": "Ereignisverlauf aktualisiert um",
+      "description": "Beschreibung",
+      "address": "Adresse",
+      "phoneNumber": "***PII***",
+      "phoneNumberMobile": "***PII***",
+      "phoneNumberHome": "***PII***",
+      "phoneNumberFax": "***PII***",
+      "phoneNumberOffice": "***PII***",
+      "phoneNumberOther": "***PII***",
+      "phoneNumberData": "***PII***",
+      "phoneNumberIsOptedOut": "***PII***",
+      "phoneNumberIsInvalid": "***PII***",
+      "order": "Reihenfolge",
+      "parent": "Bezieht sich auf",
+      "children": "Kinder",
+      "id": "ID",
+      "ids": "IDs",
+      "type": "Typ",
+      "names": "Namen",
+      "types": "Typen",
+      "targetListIsOptedOut": "Ist Opt-Out gesetzt (Kontaktliste)",
+      "childList": "Untergeordnete Liste",
+      "billingAddressCity": "Ort",
+      "billingAddressCountry": "Land",
+      "billingAddressPostalCode": "PLZ",
+      "billingAddressState": "Bundesland/Kanton",
+      "billingAddressStreet": "Straße",
+      "billingAddressMap": "Karte",
+      "addressCity": "Ort",
+      "addressStreet": "Straße",
+      "addressCountry": "Land",
+      "addressState": "Bundesland/Kanton",
+      "addressPostalCode": "PLZ",
+      "addressMap": "Karte",
+      "shippingAddressCity": "Ort (Lieferadresse)",
+      "shippingAddressStreet": "Straße (Lieferadresse)",
+      "shippingAddressCountry": "Land (Lieferadresse)",
+      "shippingAddressState": "Bundesland/Kanton (Versand)",
+      "shippingAddressPostalCode": "PLZ (Lieferadresse)",
+      "shippingAddressMap": "Karte (Lieferadresse)"
+    },
+    "links": {
+      "assignedUser": "Zugewiesener Benutzer",
+      "assignedUsers": "Zugewiesene Benutzer",
+      "collaborators": "Mitarbeiter",
+      "createdBy": "Erstellt von",
+      "modifiedBy": "Geändert von",
+      "team": "Team",
+      "roles": "Rollen",
+      "teams": "Teams",
+      "users": "Benutzer",
+      "parent": "Bezieht sich auf",
+      "children": "Kinder",
+      "contacts": "Kontakte",
+      "opportunities": "Verkaufschancen",
+      "leads": "Interessenten",
+      "meetings": "Meetings",
+      "calls": "Anrufe",
+      "tasks": "Aufgaben",
+      "emails": "E-Mails",
+      "accounts": "Firmen",
+      "cases": "Fälle",
+      "documents": "Dokumente",
+      "account": "Firma",
+      "opportunity": "Verkaufschance",
+      "contact": "Kontakt"
+    },
+    "dashlets": {
+      "Stream": "Protokollierung",
+      "Emails": "Mein Posteingang",
+      "Iframe": "Iframe",
+      "Records": "Datensatzliste",
+      "Memo": "Memo",
+      "Leads": "Meine Interessenten",
+      "Opportunities": "Meine Verkaufschancen",
+      "Tasks": "Meine Aufgaben",
+      "Cases": "Meine Fälle",
+      "Calendar": "Kalender",
+      "Calls": "Meine Anrufe",
+      "Meetings": "Meine Meetings",
+      "OpportunitiesByStage": "Verkaufschancen nach Verkaufsphase",
+      "OpportunitiesByLeadSource": "Verkaufschancen nach Quelle",
+      "SalesByMonth": "Umsätze nach Monat",
+      "SalesPipeline": "Verkaufspipeline",
+      "Activities": "Meine Aktivitäten"
+    },
+    "notificationMessages": {
+      "assign": "{entityType} {entity} wurde Ihnen zugewiesen",
+      "emailReceived": "E-Mail empfangen von {from}",
+      "entityRemoved": "{user} hat {entityType} {entity} entfernt",
+      "emailInbox": "{user} hat E-Mail {entity} zu Ihrem Posteingang hinzugefügt",
+      "userPostReaction": "{user} reagierte auf Ihre {post}",
+      "userPostInParentReaction": "{user} reagierte auf Ihre {post} in {entityType} {entity}",
+      "eventAttendee": "{user} hat dich zu {entityType} {entity} hinzugefügt"
+    },
+    "streamMessages": {
+      "post": "{user} hat zu {entityType} {entity} notiert",
+      "attach": "{user} hat zu {entityType} {entity} hinzugefügt",
+      "status": "{user} hat {field} von {entityType} {entity} aktualisiert",
+      "update": "{user} hat {entityType} {entity} aktualisiert",
+      "postTargetTeam": "{user} hat an {target} geschrieben",
+      "postTargetTeams": "{user} hat an Teams {target} geschrieben",
+      "postTargetPortal": "{user} hat an Portal {target} geschrieben",
+      "postTargetPortals": "{user} hat an Portale {target} geschrieben",
+      "postTarget": "{user} hat an {target} geschrieben",
+      "postTargetYou": "{user} hat an Sie geschrieben",
+      "postTargetYouAndOthers": "{user} hat an {target} und an Sie geschrieben",
+      "postTargetAll": "{user} hat an alle geschrieben",
+      "postTargetSelf": "{user} hat an sich selbst geschrieben",
+      "postTargetSelfAndOthers": "{user} hat an {target} und an sich selbst geschrieben",
+      "mentionInPost": "{user} erwähnte {mentioned} in {entityType} {entity}",
+      "mentionYouInPost": "{user} erwähnte Sie in {entityType} {entity}",
+      "mentionInPostTarget": "{user} erwähnte {mentioned} in Nachricht",
+      "mentionYouInPostTarget": "{user} erwähnte Sie in Nachricht an {target}",
+      "mentionYouInPostTargetAll": "{user} erwähnte Sie in Nachricht an alle",
+      "mentionYouInPostTargetNoTarget": "{user} erwähnte Sie in Nachricht",
+      "create": "{user} hat {entityType} {entity} erstellt",
+      "createThis": "{user} hat {entityType} erstellt",
+      "createAssignedThis": "{user} hat {entityType} erstellt und an {assignee} zugewiesen",
+      "createAssigned": "{user} hat {entityType} {entity} erstellt und an {assignee} zugewiesen",
+      "createAssignedYou": "{user} hat ihnen die {entityType} {entity} zugewiesen",
+      "createAssignedThisSelf": "{user} erstellt {entityType} mit eigener Zuordnung",
+      "createAssignedSelf": "{user} erstellt {entityType} {entity} mit eigener Zuordnung",
+      "assign": "{user} hat {entityType} {entity} an {assignee} zugewiesen",
+      "assignThis": "{user} hat {entityType} an {assignee} zugewiesen",
+      "assignYou": "{entityType} {entity} wurde Ihnen zugewiesen",
+      "assignThisVoid": "{user} löst die Zuordnung {entityType}",
+      "assignVoid": "{user} löst die Zuordnung {entityType} {entity}",
+      "assignThisSelf": "{user} hat sich selbst {entityType} zugewiesen",
+      "assignSelf": "{user} hat sich {entityType} {entity} selbst zugewiesen",
+      "assignMultiAdd": "{user} hat {entity} {assignee} zugewiesen",
+      "assignMultiRemove": "{user} hat die Zuweisung von {entity} an {removedAssignee} entfernt",
+      "assignMultiAddRemove": "{user} hat {entity} an {assignee} zugewiesen und die Zuweisung an {removedAssignee} aufgehoben",
+      "assignMultiAddThis": "{user} hat {entityType} an {assignee} zugewiesen",
+      "assignMultiRemoveThis": "{user} hat die Zuweisung von {entityType} an {removedAssignee} aufgehoben",
+      "assignMultiAddRemoveThis": "{user} hat {entityType} an {assignee} zugewiesen und die Zuweisung an {removedAssignee} aufgehoben",
+      "postThis": "{user} hat notiert",
+      "attachThis": "{user} hat hinzugefügt",
+      "statusThis": "{user} hat {field} aktualisiert",
+      "updateThis": "{user} hat diese(s/n) {entityType} aktualisiert",
+      "createRelatedThis": "{user} hat {relatedEntityType} {relatedEntity} verbunden mit dieser/m {entityType} erstellt",
+      "createRelated": "{user} hat {relatedEntityType} {relatedEntity} verbunden mit {entityType} {entity} erstellt",
+      "relate": "{user} hat {relatedEntityType} {relatedEntity} mit {entityType} {entity} verbunden",
+      "relateThis": "{user} hat {relatedEntityType} {relatedEntity} mit diese/r/m {entityType} verbunden",
+      "unrelate": "{user} hat die Verknüpfung von {relatedEntityType} {relatedEntity} zu {entityType} {entity} gelöscht",
+      "unrelateThis": "{user} hat die Verknüpfung von {relatedEntityType} {relatedEntity} zu {entityType} gelöscht",
+      "emailReceivedFromThis": "E-Mail empfangen von {from}",
+      "emailReceivedInitialFromThis": "E-Mail empfangen von {from}, ein(e) {entityType} wurde erstellt",
+      "emailReceivedThis": "E-Mail empfangen",
+      "emailReceivedInitialThis": "E-Mail empfangen, ein(e) {entityType} wurde erstellt",
+      "emailReceivedFrom": "E-Mail empfangen von {from}, verbunden mit {entityType} {entity}",
+      "emailReceivedFromInitial": "E-Mail empfangen von {from}, {entityType} {entity} wurde erstellt",
+      "emailReceived": "E-Mail empfangen verbunden mit {entityType} {entity}",
+      "emailReceivedInitial": "E-Mail empfangen: {entityType} {entity} wurde erstellt",
+      "emailReceivedInitialFrom": "E-Mail empfangen von {from}, {entityType} {entity} wurde erstellt",
+      "emailSent": "{by} hat eine E-Mail verbunden mit {entityType} {entity} gesendet",
+      "emailSentThis": "{by} hat eine E-Mail gesendet",
+      "eventConfirmationAccepted": "{invitee} hat die Einladung zu {entityType} {entity} akzeptiert",
+      "eventConfirmationDeclined": "{invitee} hat die Einladung zu {entityType} {entity} abgelehnt",
+      "eventConfirmationTentative": "{invitee} ist vorläufig an der Teilnahme an {entityType} {entity} interessiert",
+      "eventConfirmationAcceptedThis": "{invitee} hat zugesagt",
+      "eventConfirmationDeclinedThis": "{invitee} hat abgesagt",
+      "eventConfirmationTentativeThis": "{invitee} stimmt der Teilnahme vorläufig zu"
+    },
+    "streamMessagesMale": {
+      "postTargetSelfAndOthers": "{user} hat an {target} und sich selbst geschrieben"
+    },
+    "streamMessagesFemale": {
+      "postTargetSelfAndOthers": "{user} hat an {target} und sich selbst geschrieben"
+    },
+    "lists": {
+      "monthNames": [
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember"
+      ],
+      "monthNamesShort": [
+        "Jan",
+        "Feb",
+        "Mär",
+        "Apr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Dez"
+      ],
+      "dayNames": [
+        "Sonntag",
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag"
+      ],
+      "dayNamesShort": [
+        "So",
+        "Mo",
+        "Di",
+        "Mi",
+        "Do",
+        "Fr",
+        "Sa"
+      ],
+      "dayNamesMin": [
+        "So",
+        "Mo",
+        "Di",
+        "Mi",
+        "Do",
+        "Fr",
+        "Sa"
+      ]
+    },
+    "durationUnits": {
+      "d": "T",
+      "h": "St",
+      "m": "M",
+      "s": "S"
+    },
+    "options": {
+      "salutationName": {
+        "Mr.": "Hr.",
+        "Mrs.": "Frau",
+        "Ms.": "Fr.",
+        "Dr.": "Dr."
+      },
+      "language": {
+        "ar_AR": "Arabic",
+        "af_ZA": "Afrikaans",
+        "az_AZ": "Azerbaijani",
+        "be_BY": "Belarusian",
+        "bg_BG": "Bulgarian",
+        "bn_IN": "Bengali",
+        "bs_BA": "Bosnian",
+        "ca_ES": "Catalan",
+        "cs_CZ": "Czech",
+        "cy_GB": "Welsh",
+        "da_DK": "Danish",
+        "de_DE": "German",
+        "el_GR": "Greek",
+        "en_GB": "English (UK)",
+        "es_MX": "Spanish (Mexico)",
+        "en_US": "English (US)",
+        "es_ES": "Spanish (Spain)",
+        "et_EE": "Estonian",
+        "eu_ES": "Basque",
+        "fa_IR": "Persian",
+        "fi_FI": "Finnish",
+        "fo_FO": "Faroese",
+        "fr_CA": "French (Canada)",
+        "fr_FR": "French (France)",
+        "ga_IE": "Irish",
+        "gl_ES": "Galician",
+        "gn_PY": "Guarani",
+        "he_IL": "Hebrew",
+        "hi_IN": "Hindi",
+        "hr_HR": "Croatian",
+        "hu_HU": "Hungarian",
+        "hy_AM": "Armenian",
+        "id_ID": "Indonesian",
+        "is_IS": "Icelandic",
+        "it_IT": "Italian",
+        "ja_JP": "Japanese",
+        "ka_GE": "Georgian",
+        "km_KH": "Khmer",
+        "ko_KR": "Korean",
+        "ku_TR": "Kurdish",
+        "lt_LT": "Lithuanian",
+        "lv_LV": "Latvian",
+        "mk_MK": "Macedonian",
+        "ml_IN": "Malayalam",
+        "ms_MY": "Malay",
+        "nb_NO": "Norwegian Bokmål",
+        "nn_NO": "Norwegian Nynorsk",
+        "ne_NP": "Nepali",
+        "nl_NL": "Dutch",
+        "pa_IN": "Punjabi",
+        "pl_PL": "Polish",
+        "ps_AF": "Pashto",
+        "pt_BR": "Portuguese (Brazil)",
+        "pt_PT": "Portuguese (Portugal)",
+        "ro_RO": "Romanian",
+        "ru_RU": "Russian",
+        "sk_SK": "Slovak",
+        "sl_SI": "Slovene",
+        "sq_AL": "Albanian",
+        "sr_RS": "Serbian",
+        "sv_SE": "Swedish",
+        "sw_KE": "Swahili",
+        "ta_IN": "Tamil",
+        "te_IN": "Telugu",
+        "th_TH": "Thai",
+        "tl_PH": "Tagalog",
+        "tr_TR": "Turkish",
+        "uk_UA": "Ukrainian",
+        "ur_PK": "Urdu",
+        "vi_VN": "Vietnamese",
+        "zh_CN": "Simplified Chinese (China)",
+        "zh_HK": "Traditional Chinese (Hong Kong)",
+        "zh_TW": "Traditional Chinese (Taiwan)"
+      },
+      "dateSearchRanges": {
+        "on": "Am",
+        "notOn": "Nicht am",
+        "after": "Nach",
+        "before": "Vor",
+        "between": "Zwischen",
+        "today": "Heute",
+        "past": "Vergangenheit",
+        "future": "Zukunft",
+        "currentMonth": "Aktuelles Monat",
+        "lastMonth": "Letzten Monat",
+        "nextMonth": "Nächsten Monat",
+        "currentQuarter": "Aktuelles Quartal",
+        "lastQuarter": "Letztes Quartal",
+        "currentYear": "Aktuelles Jahr",
+        "lastYear": "Letztes Jahr",
+        "lastSevenDays": "Letzten 7 Tage",
+        "lastXDays": "Letzten X Tage",
+        "nextXDays": "Nächsten X Tage",
+        "ever": "Jemals",
+        "isEmpty": "Ist leer",
+        "olderThanXDays": "älter als X Tage",
+        "afterXDays": "nach X Tagen",
+        "currentFiscalYear": "Aktuelles Geschäftsjahr",
+        "lastFiscalYear": "Letztes Geschäftsjahr",
+        "currentFiscalQuarter": "Aktuelles Geschäftsquartal",
+        "lastFiscalQuarter": "Letztes Geschäftsquartal"
+      },
+      "searchRanges": {
+        "is": "Ist",
+        "isEmpty": "Ist leer",
+        "isNotEmpty": "Ist nicht leer",
+        "isOneOf": "Irgendein von",
+        "isFromTeams": "Ist von Team",
+        "isNot": "Ist nicht",
+        "isNotOneOf": "Keiner von",
+        "anyOf": "Irgendein von",
+        "allOf": "Alle von",
+        "noneOf": "Keiner von",
+        "any": "Alle"
+      },
+      "varcharSearchRanges": {
+        "equals": "Gleich",
+        "like": "Wie (%)",
+        "notLike": "Ist nicht wie (%)",
+        "startsWith": "Beginnt mit",
+        "endsWith": "Endet mit",
+        "contains": "Enthält",
+        "notContains": "Enthält nicht",
+        "isEmpty": "Ist leer",
+        "isNotEmpty": "Ist nicht leer",
+        "notEquals": "Nicht gleich",
+        "anyOf": "Jeder von",
+        "noneOf": "Keiner von"
+      },
+      "intSearchRanges": {
+        "equals": "Gleich",
+        "notEquals": "Nicht gleich",
+        "greaterThan": "Größer als",
+        "lessThan": "Weniger als",
+        "greaterThanOrEquals": "Größer oder gleich als",
+        "lessThanOrEquals": "Weniger oder gleich als",
+        "between": "Zwischen",
+        "isEmpty": "Ist leer",
+        "isNotEmpty": "Ist nicht leer"
+      },
+      "autorefreshInterval": {
+        "0": "Kein(e)",
+        "1": "1 Minute",
+        "2": "2 Minuten",
+        "5": "5 Minuten",
+        "10": "10 Minuten",
+        "0.5": "30 Sekunden"
+      },
+      "phoneNumber": {
+        "Mobile": "***PII***",
+        "Office": "Telefon Büro",
+        "Fax": "Fax",
+        "Home": "Telefon Privat",
+        "Other": "Telefon Andere"
+      },
+      "saveConflictResolution": {
+        "current": "Derzeitige",
+        "actual": "Tatsächlich",
+        "original": "Original"
+      },
+      "reminderTypes": {
+        "Popup": "Popup",
+        "Email": "E-Mail"
+      }
+    },
+    "sets": {
+      "summernote": {
+        "NOTICE": "Sie finden die Übersetzung hier: https://github.com/HackerWins/summernote/tree/master/lang",
+        "font": {
+          "bold": "Fett",
+          "italic": "Kursiv",
+          "underline": "Unterstrichen",
+          "strike": "Durchgestrichen",
+          "clear": "Font Stil entfernen",
+          "height": "Zeilenhöhe",
+          "name": "Schriftfamilie",
+          "size": "Schriftgröße"
+        },
+        "image": {
+          "image": "Bild",
+          "insert": "Bild einfügen",
+          "resizeFull": "Originalgröße",
+          "resizeHalf": "Größe 1/2",
+          "resizeQuarter": "Größe 1/4",
+          "floatLeft": "Linksbündig",
+          "floatRight": "Rechtsbündig",
+          "floatNone": "Kein Textfluss",
+          "dragImageHere": "Bild hier ablegen",
+          "selectFromFiles": "Wählen Sie eine Datei aus",
+          "url": "Grafik URL",
+          "remove": "Grafik entfernen"
+        },
+        "link": {
+          "link": "Link",
+          "insert": "Link einfügen",
+          "unlink": "Link entfernen",
+          "edit": "Bearbeiten",
+          "textToDisplay": "Anzeigetext",
+          "url": "Ziel des Links?",
+          "openInNewWindow": "In einem neuen Fenster öffnen"
+        },
+        "video": {
+          "video": "Video",
+          "videoLink": "Video Link",
+          "insert": "Video einfügen",
+          "url": "Video URL?",
+          "providers": "(YouTube, Vimeo, Vine, Instagram oder DailyMotion)"
+        },
+        "table": {
+          "table": "Tabelle"
+        },
+        "hr": {
+          "insert": "Eine horizontale Linie einfügen"
+        },
+        "style": {
+          "style": "Stil",
+          "normal": "Normal",
+          "blockquote": "Zitat",
+          "pre": "Quellcode",
+          "h1": "Überschrift 1",
+          "h2": "Überschrift 2",
+          "h3": "Überschrift 3",
+          "h4": "Überschrift 4",
+          "h5": "Überschrift 5",
+          "h6": "Überschrift 6"
+        },
+        "lists": {
+          "unordered": "Unsortierte Liste",
+          "ordered": "Nummerierte Liste"
+        },
+        "options": {
+          "help": "Hilfe",
+          "fullscreen": "Vollbild",
+          "codeview": "HTML-Code anzeigen"
+        },
+        "paragraph": {
+          "paragraph": "Absatz",
+          "outdent": "Ausrückung",
+          "indent": "Einrückung",
+          "left": "Links ausrichten",
+          "center": "Zentriert ausrichten",
+          "right": "Rechts ausrichten",
+          "justify": "Blocksatz"
+        },
+        "color": {
+          "recent": "Letzte Farbe",
+          "more": "Mehr Farben",
+          "background": "Hintergrundfarbe",
+          "foreground": "Schriftfarbe",
+          "transparent": "Transparenz",
+          "setTransparent": "Transparenz setzen",
+          "reset": "Zurücksetzen",
+          "resetToDefault": "Zurücksetzen auf Standard"
+        },
+        "shortcut": {
+          "shortcuts": "Tastaturkürzel",
+          "close": "Schließen",
+          "textFormatting": "Textformatierung",
+          "action": "Aktion",
+          "paragraphFormatting": "Absatzformatierung",
+          "documentStyle": "Dokumentenstil"
+        },
+        "history": {
+          "undo": "Rückgängig",
+          "redo": "Wiederholen"
+        }
+      }
+    },
+    "listViewModes": {
+      "list": "Liste",
+      "kanban": "Kanban"
+    },
+    "themes": {
+      "Dark": "Dunkel",
+      "Light": "Hell",
+      "Espo": "Espo",
+      "EspoRtl": "RTL",
+      "Sakura": "Kirschblüten",
+      "Violet": "Violett",
+      "Hazyblue": "Blassblau",
+      "Glass": "Glas"
+    },
+    "themeNavbars": {
+      "side": "Seitliche Navigationsleiste",
+      "top": "Obere Navigationsleiste"
+    },
+    "fieldValidations": {
+      "required": "Erforderlich",
+      "maxCount": "Maximale Anzahl",
+      "maxLength": "Maximale Länge",
+      "pattern": "Musterabgleich",
+      "emailAddress": "***PII***",
+      "phoneNumber": "***PII***",
+      "array": "Array",
+      "arrayOfString": "Array von Zeichenketten",
+      "valid": "Gültigkeit",
+      "noEmptyString": "Keine leere Zeichenkette",
+      "max": "Maximal Wert",
+      "min": "Minimal Wert"
+    },
+    "fieldValidationExplanations": {
+      "valid": "Ungültiger Wert.",
+      "maxLength": "Die Länge des Wertes überschreitet den Maximalwert.",
+      "phone_valid": "***PII***",
+      "url_valid": "Ungültige URL.",
+      "currency_valid": "Ungültiger Betrag.",
+      "currency_validCurrency": "Der Wert des Währungscodes ist ungültig oder nicht zulässig.",
+      "varchar_pattern": "Wahrscheinlich enthält der Wert nicht zulässige Zeichen.",
+      "email_emailAddress": "Ungültige E-Mail Adresse.",
+      "phone_phoneNumber": "***PII***",
+      "datetimeOptional_valid": "Ungültiger Datum-Uhrzeit Wert.",
+      "datetime_valid": "Ungültiger Datum-Uhrzeit Wert.",
+      "date_valid": "Ungültiger Datumswert.",
+      "enum_valid": "Ungültiger Auswahlwert. Der Wert muss eine der definierten Auswahloptionen sein. Ein leerer Wert ist nur zulässig, wenn das Feld eine leere Option hat.",
+      "int_valid": "Ungültiger ganzzahliger Zahlenwert.",
+      "float_valid": "Ungültiger Zahlenwert.",
+      "multiEnum_valid": "Ungültiger Mehrfachauswahlwert. Werte müssen einer der definierten Feldoptionen entsprechen."
+    },
+    "navbarTabs": {
+      "Business": "Business",
+      "Marketing": "Marketing",
+      "Support": "Support",
+      "CRM": "CRM",
+      "Activities": "Aktivitäten"
+    },
+    "wysiwygLabels": {
+      "cell": "Zelle",
+      "align": "Ausrichtung",
+      "width": "Breite",
+      "height": "Höhe",
+      "borderWidth": "Randbreite",
+      "borderColor": "Randfarbe",
+      "cellPadding": "Zelleninnenabstand",
+      "backgroundColor": "Hintergrundfarbe",
+      "verticalAlign": "Vertikale Ausrichtung"
+    },
+    "wysiwygOptions": {
+      "align": {
+        "left": "Links",
+        "center": "Zentriert",
+        "right": "Rechts"
+      },
+      "verticalAlign": {
+        "top": "Oben",
+        "middle": "Mitte",
+        "bottom": "Unten"
+      }
+    },
+    "detailViewModes": {
+      "detail": "Detail"
+    },
+    "strings": {
+      "yesterdayShort": "Gestern"
+    },
+    "reactions": {
+      "Smile": "Lächeln",
+      "Surprise": "Überrascht",
+      "Laugh": "Lacht",
+      "Meh": "Bah",
+      "Sad": "Traurig",
+      "Love": "Liebe",
+      "Like": "Mag ich",
+      "Dislike": "Mag ich nicht"
+    },
+    "recordActions": {
+      "create": "Erstellen",
+      "read": "Lesen",
+      "edit": "Ändern",
+      "delete": "Löschen",
+      "stream": "Ereignis"
+    },
+    "tabs": {
+      "Stream": "Ereignisse"
+    }
+  },
+  "Integration": {
+    "fields": {
+      "enabled": "Aktiv",
+      "clientId": "Client-ID",
+      "clientSecret": "***REDACTED***",
+      "redirectUri": "Weiterleitungs URI",
+      "apiKey": "***REDACTED***",
+      "siteKey": "Website-Schlüssel",
+      "secretKey": "***REDACTED***",
+      "scoreThreshold": "Zahl Schwellenwert",
+      "mapId": "Map ID"
+    },
+    "titles": {
+      "GoogleMaps": "Google Maps",
+      "GoogleReCaptcha": "Google reCAPTCHA"
+    },
+    "messages": {
+      "selectIntegration": "Wählen Sie eine Integration aus dem Menü.",
+      "noIntegrations": "Keine Integration verfügbar."
+    },
+    "help": {
+      "GoogleReCaptcha": "Beziehen Sie den Website-Schlüssel und den geheimen Schlüssel von [Google](https://www.google.com/recaptcha/).",
+      "Google": "Holen Sie die OAuth 2.0 Credentials über die Google Developers Console.\n\nBesuchen Sie [die Google Developers Console](https://console.developers.google.com/project) um OAuth 2.0 Credentials wie eine Client ID und Client Geheimnis zu erhalten die sowohl Google als auch EspoCRM bekannt sind.",
+      "GoogleMaps": "API Key [hier](https://developers.google.com/maps/documentation/javascript/get-api-key) beantragen."
+    }
+  },
+  "Note": {
+    "fields": {
+      "post": "Nachricht",
+      "attachments": "Anhänge",
+      "targetType": "Ziel",
+      "teams": "Teams",
+      "users": "Benutzer",
+      "portals": "Portale",
+      "type": "Typ",
+      "isGlobal": "Ist global",
+      "isInternal": "Ist Intern (für interne Benutzer)",
+      "isPinned": "Ist angeheftet",
+      "related": "Verbunden",
+      "createdByGender": "Erstellt von Geschlecht",
+      "data": "Daten",
+      "number": "Nummer"
+    },
+    "filters": {
+      "all": "Alle",
+      "posts": "Notizen",
+      "updates": "Aktualisierungen",
+      "activity": "Aktivität"
+    },
+    "options": {
+      "targetType": {
+        "self": "Selbst",
+        "users": "Benutzer",
+        "teams": "Teams",
+        "all": "Alle interne Benutzer",
+        "portals": "Portalbenutzer"
+      },
+      "type": {
+        "Post": "Senden",
+        "Create": "Erstellen",
+        "CreateRelated": "Verknüpft erstellen",
+        "Update": "Aktualisieren",
+        "Status": "Status",
+        "Assign": "Zuweisen",
+        "Relate": "Verknüpfen",
+        "Unrelate": "Verknüpfung lösen",
+        "EmailReceived": "E-Mail erhalten",
+        "EmailSent": "E-Mail gesendet"
+      }
+    },
+    "labels": {
+      "View Posts": "Nachrichten anzeigen",
+      "View Attachments": "Anhänge anzeigen",
+      "View Activity": "Aktivitäten anzeigen",
+      "Pin": "Anheften",
+      "Unpin": "Lösen",
+      "Pinned": "Angeheftet",
+      "Quote Reply": "Antwort zitieren"
+    },
+    "messages": {
+      "writeMessage": "Schreiben Sie hier Ihre Nachricht",
+      "pinnedMaxCountExceeded": "Es können nicht mehr Notizen angeheftet werden. Die maximal zulässige Anzahl ist {count}."
+    },
+    "links": {
+      "portals": "Portale",
+      "attachments": "Anhänge",
+      "superParent": "Super Eltern",
+      "related": "Verbunden"
+    },
+    "otherFields": {
+      "to": "An"
+    }
+  },
+  "Preferences": {
+    "fields": {
+      "dateFormat": "Datumsformat",
+      "timeFormat": "Zeitformat",
+      "timeZone": "Zeitzone",
+      "weekStart": "Erster Tag der Woche",
+      "thousandSeparator": "Tausendertrennzeichen",
+      "decimalMark": "Dezimaltrennzeichen",
+      "defaultCurrency": "Standardwährung",
+      "currencyList": "Währungsliste",
+      "language": "Sprache",
+      "exportDelimiter": "Export Trennzeichen",
+      "receiveAssignmentEmailNotifications": "E-Mail Nachrichten bei Zuweisungen erhalten",
+      "receiveMentionEmailNotifications": "E-Mail-Benachrichtigungen über Erwähnungen in Beiträgen",
+      "receiveStreamEmailNotifications": "E-Mail-Benachrichtigungen über Beiträge und Statusaktualisierungen",
+      "assignmentNotificationsIgnoreEntityTypeList": "In-App-Benachrichtigungen über Zuweisungen",
+      "assignmentEmailNotificationsIgnoreEntityTypeList": "E-Mail-Benachrichtigungen über Zuweisungen",
+      "reactionNotifications": "In-App-Benachrichtigungen über Reaktionen",
+      "autoFollowEntityTypeList": "Automatisches Abonnieren",
+      "signature": "E-Mail Signatur",
+      "dashboardTabList": "Menüliste",
+      "defaultReminders": "Vorgaben für Benachrichtigungen",
+      "defaultRemindersTask": "Standard-Erinnerungen für Aufgaben",
+      "theme": "Design",
+      "pageContentWidth": "Inhaltsbreite",
+      "useCustomTabList": "Benutzerdefinierte Menüliste",
+      "addCustomTabs": "Benutzerdefinierte Registerkarten hinzufügen",
+      "tabList": "Menüliste",
+      "emailReplyToAllByDefault": "Standardmäßig Allen antworten",
+      "dashboardLayout": "Dashboard Layout",
+      "dashboardLocked": "Dashboard sperren",
+      "emailReplyForceHtml": "E-Mail Antwort als HTML",
+      "doNotFillAssignedUserIfNotRequired": "Zugewiesenen Benutzer bei der Erstellung des Datensatzes nicht vorab ausfüllen",
+      "followEntityOnStreamPost": "Der Benutzer abonniert die Einträge nach dem Posten in dessen Ereignisverlauf",
+      "followCreatedEntities": "Eigene Einträge abonnieren",
+      "followCreatedEntityTypeList": "Der Benutzer abonniert erstellte Einträge bestimmter Entitätstypen automatisch",
+      "emailUseExternalClient": "Verwende einen externen E-Mail-Client",
+      "textSearchStoringDisabled": "Textfilterspeicherung deaktivieren",
+      "calendarSlotDuration": "Kalender - Dauer des Zeitfensters",
+      "calendarScrollHour": "Kalender - Zur Stunde springen"
+    },
+    "options": {
+      "weekStart": [
+        "Sonntag",
+        "Montag"
+      ],
+      "pageContentWidth": {
+        "": "Normal",
+        "Wide": "Breit"
+      }
+    },
+    "labels": {
+      "Notifications": "Benachrichtigungen",
+      "User Interface": "Benutzeroberfläche",
+      "Misc": "Verschiedenes",
+      "Locale": "Lokalisierungs-Einstellungen",
+      "Reset Dashboard to Default": "Dashboard auf Standard zurücksetzen"
+    },
+    "tooltips": {
+      "addCustomTabs": "Wenn diese Option aktiviert ist, werden benutzerdefinierte Registerkarten an die Standardregisterkarten angehängt. Andernfalls werden benutzerdefinierte Registerkarten anstelle der Standardregisterkarten verwendet.",
+      "autoFollowEntityTypeList": "Der Benutzer abonniert automatisch alle neuen Einträge der gewählten Entitätstypen, sieht Neuigkeiten im Ereignisverlauf und erhält Benachrichtigungen.",
+      "doNotFillAssignedUserIfNotRequired": "Beim Erstellen eines Datensatzes wird der zugewiesene Benutzer nicht mit dem eigenen Benutzer ausgefüllt, es sei denn, das Feld ist erforderlich.",
+      "followCreatedEntities": "Wenn neue Datensätze erstellt werden, werden diese automatisch gefolgt, auch wenn sie einem anderen Benutzer zugewiesen sind.",
+      "followCreatedEntityTypeList": "Wenn neue Datensätze von ausgewählten Entitätstypen erstellt werden, werden diese automatisch gefolgt, auch wenn sie einem anderen Benutzer zugewiesen sind."
+    },
+    "tabFields": {
+      "label": "Bezeichnung",
+      "iconClass": "Icon",
+      "color": "Farbe"
+    }
+  },
+  "Stream": {
+    "messages": {
+      "infoMention": "Geben Sie **@username** ein, um den Benutzer im Beitrag zu erwähnen.",
+      "infoSyntax": "Verfügbare Markdown-Syntax",
+      "couldNotAddFollowerUserHasNoAccessToStream": "Der Benutzer '{userName}' konnte nicht zu den Abonnenten hinzugefügt werden. Der Benutzer hat keinen 'Ereignis'-Zugriff auf den Datensatz."
+    },
+    "syntaxItems": {
+      "code": "Code",
+      "multilineCode": "mehrzeiliger Code",
+      "strongText": "Fettschrift",
+      "emphasizedText": "Hervorgehobener Text",
+      "deletedText": "gelöschter Text",
+      "blockquote": "Zitat",
+      "link": "Verknüpfungstext"
+    }
+  },
+  "User": {
+    "fields": {
+      "name": "Name",
+      "userName": "Benutzername",
+      "title": "Funktion",
+      "type": "Art",
+      "isAdmin": "Ist Admin",
+      "defaultTeam": "Standard-Team",
+      "emailAddress": "***PII***",
+      "phoneNumber": "***PII***",
+      "roles": "Rollen",
+      "portals": "Portale",
+      "portalRoles": "Portal Rollen",
+      "teamRole": "Position",
+      "currentPassword": "***REDACTED***",
+      "newPassword": "***REDACTED***",
+      "newPasswordConfirm": "***REDACTED***",
+      "yourPassword": "***REDACTED***",
+      "avatar": "Avatar",
+      "avatarColor": "Farbe des Avatars",
+      "isActive": "Ist aktiv",
+      "isPortalUser": "Ist Portal Benutzer",
+      "contact": "Kontakt",
+      "accounts": "Firmen",
+      "account": "Benutzerkonto (Primär)",
+      "sendAccessInfo": "E-Mail mit Zugangsinformationen an Benutzer senden",
+      "portal": "Portal",
+      "position": "Position im Team",
+      "ipAddress": "IP-Adresse",
+      "passwordPreview": "***REDACTED***",
+      "isSuperAdmin": "Ist Super-Admin",
+      "lastAccess": "Letzter Zugriff",
+      "workingTimeCalendar": "Arbeitszeitkalender",
+      "auth2FAEnable": "2-Faktor-Authentifizierung aktivieren",
+      "auth2FAMethod": "2FA Methode",
+      "auth2FATotpSecret": "***REDACTED***",
+      "acceptanceStatus": "Akzeptanzstatus",
+      "acceptanceStatusMeetings": "Akzeptanzstatus (Meetings)",
+      "acceptanceStatusCalls": "Akzeptanzstatus (Anrufe)",
+      "password": "***REDACTED***",
+      "passwordConfirm": "***REDACTED***"
+    },
+    "links": {
+      "defaultTeam": "Standard Team",
+      "teams": "Teams",
+      "roles": "Rollen",
+      "notes": "Notizen",
+      "portals": "Portale",
+      "portalRoles": "Portal Rollen",
+      "contact": "Kontakt",
+      "accounts": "Firmen",
+      "account": "Benutzerkonto (Primär)",
+      "tasks": "Aufgaben",
+      "workingTimeCalendar": "Arbeitszeitkalender",
+      "workingTimeRanges": "Arbeitszeitausnahmen",
+      "targetLists": "Kontaktlisten"
+    },
+    "labels": {
+      "Create User": "Benutzer erstellen",
+      "Generate": "Erzeugen",
+      "Access": "Berechtigungen",
+      "Preferences": "Benutzereinstellungen",
+      "Change Password": "***REDACTED***",
+      "Teams and Access Control": "Teams und Zugriffsberechtigung",
+      "Forgot Password?": "***REDACTED***",
+      "Password Change Request": "***REDACTED***",
+      "Email Address": "E-Mail Adresse",
+      "External Accounts": "Externe Konten",
+      "Email Accounts": "E-Mail Konten",
+      "Portal": "Portal",
+      "Create Portal User": "Portalbenutzer erstellen",
+      "Proceed w/o Contact": "Weiter mit Kontakt",
+      "Generate New API Key": "Neuen API Schlüssel erstellen",
+      "Generate New Password": "***REDACTED***",
+      "Send Password Change Link": "***REDACTED***",
+      "Back to login form": "Zurück zum Anmeldeformular",
+      "Requirements": "Anforderungen",
+      "Security": "Sicherheit",
+      "Reset 2FA": "2FA zurücksetzen",
+      "Code": "Code",
+      "Secret": "***REDACTED***",
+      "Send Code": "Code senden",
+      "Login Link": "Anmeldelink"
+    },
+    "tooltips": {
+      "defaultTeam": "Alle Datensätze dieses Benutzers werden standardmäßig seinem Team zugeordnet.",
+      "userName": "Erlaubte Zeichen sind die Buchstaben a-z, Ziffern, Punkt, @-Symbol, Strich und Unterstrich.",
+      "isAdmin": "Der Admin Benutzer hat vollen Zugriff auf alle Funktionen.",
+      "isActive": "Wenn nicht markiert, kann der Benutzer sich nicht einloggen.",
+      "teams": "Das Team zu dem dieser Benutzer gehört. Die Zugriffsberechtigung wird von der Team Rolle vererbt.",
+      "roles": "Zusätzliche Zugriffsrollen. Wenn ein Benutzer zu keinem Team gehört oder wenn Sie die Zugriffsberechtigung nur für diesen Benutzer erweitern wollen.",
+      "portalRoles": "Zusätzliche Portal Rollen. Benutzen Sie diese, wenn Sie die Zugriffsberechtigung nur für diesen Benutzer erweitern wollen.",
+      "portals": "Portale auf die der Benutzer Zugriff hat.",
+      "layoutSet": "Layouts aus einem bestimmten Satz werden anstelle der Standardlayouts für den Benutzer verwendet."
+    },
+    "messages": {
+      "2faMethodNotConfigured": "Die 2FA-Methode ist im System nicht vollständig konfiguriert.",
+      "loginAs": "Öffnen Sie den Anmeldelink in einem Inkognito-Fenster, um Ihre aktuelle Sitzung beizubehalten. Melden Sie sich mit Ihren Administrator-Anmeldedaten an.",
+      "sendPasswordChangeLinkConfirmation": "***REDACTED***",
+      "passwordRecoverySentIfMatched": "***REDACTED***",
+      "passwordStrengthLength": "***REDACTED***",
+      "passwordStrengthLetterCount": "***REDACTED***",
+      "passwordStrengthNumberCount": "***REDACTED***",
+      "passwordStrengthSpecialCharacterCount": "***REDACTED***",
+      "passwordStrengthBothCases": "***REDACTED***",
+      "passwordWillBeSent": "***REDACTED***",
+      "passwordChanged": "***REDACTED***",
+      "userCantBeEmpty": "Der Benutzername darf nicht leer sein!",
+      "wrongUsernamePassword": "***REDACTED***",
+      "failedToLogIn": "Anmeldung fehlgeschlagen",
+      "emailAddressCantBeEmpty": "***PII***",
+      "userNameEmailAddressNotFound": "Benutzername oder E-Mail Adresse nicht gefunden",
+      "forbidden": "Verboten, bitte später nochmals versuchen",
+      "uniqueLinkHasBeenSent": "Ein einmaliger Link wurde an die angegebene E-Mail Adresse gesendet.",
+      "passwordChangedByRequest": "***REDACTED***",
+      "setupSmtpBefore": "***REDACTED***",
+      "userNameExists": "Benutzername existiert bereits",
+      "loginError": "Ein Fehler ist aufgetreten",
+      "wrongCode": "Falscher Code",
+      "codeIsRequired": "Code ist erforderlich",
+      "yourAuthenticationCode": "Dein Authentication-Code lautet: {code}.",
+      "choose2FaSmsPhoneNumber": "Wählen Sie eine Telefonnummer aus, die für 2FA verwendet werden soll.",
+      "choose2FaEmailAddress": "Wählen Sie eine E-Mail-Adresse, die für 2FA verwendet werden soll. Es wird dringend empfohlen, eine nicht primäre E-Mail-Adresse zu verwenden.",
+      "enterCodeSentInEmail": "Gib den Code ein, welcher dir per E-Mail gesendet wurde.",
+      "enterCodeSentBySms": "Gib den Code ein, welcher dir per SMS gesendet wurde.",
+      "enterTotpCode": "Geben Sie den Code aus Ihrer Authenticator-App ein.",
+      "verifyTotpCode": "Scannen Sie den QR-Code mit Ihrer mobilen Authentifizierungs-App. Wenn Sie Probleme mit dem Scannen haben, können Sie den Schlüssel auch manuell eingeben. Danach sehen Sie einen 6-stelligen Code in Ihrer Anwendung. Geben Sie diesen Code in das Feld unten ein.",
+      "generateAndSendNewPassword": "***REDACTED***",
+      "security2FaResetConfirmation": "Sind Sie sicher, dass Sie die aktuellen 2FA-Einstellungen zurücksetzen möchten?",
+      "auth2FARequiredHeader": "2-Faktor-Authentifizierung erforderlich",
+      "auth2FARequired": "Sie müssen eine 2-Faktor-Authentifizierung einrichten. Verwenden Sie eine Authentifizierungsanwendung auf Ihrem Mobiltelefon (z.B. Google Authenticator).",
+      "ldapUserInEspoNotFound": "Benutzer wird in EspoCRM nicht gefunden. Wenden Sie sich an Ihren Administrator, um den Benutzer anzulegen.",
+      "passwordChangeRequestNotFound": "***REDACTED***",
+      "defaultTeamIsNotUsers": "Das Standardteam sollte eines der Teams des Benutzers sein"
+    },
+    "options": {
+      "type": {
+        "regular": "Regulär",
+        "admin": "Admin",
+        "portal": "Portal",
+        "system": "System",
+        "super-admin": "Super-Admin",
+        "api": "API"
+      }
+    },
+    "boolFilters": {
+      "onlyMyTeam": "Nur mein Team",
+      "onlyMe": "Nur ich"
+    },
+    "presetFilters": {
+      "active": "Aktiv",
+      "activePortal": "Portal Aktiv",
+      "activeApi": "API aktiv"
+    },
+    "actions": {
+      "changePosition": "Position ändern"
+    }
+  },
+  "Calendar": {
+    "modes": {
+      "month": "Monat",
+      "week": "Woche",
+      "day": "Tag",
+      "agendaWeek": "Woche",
+      "agendaDay": "Tag",
+      "timeline": "Zeitachse"
+    },
+    "labels": {
+      "Today": "Heute",
+      "Create": "Erstellen",
+      "Shared": "Gemeinsam",
+      "Add User": "Benutzer hinzufügen",
+      "current": "aktuell",
+      "time": "Zeit",
+      "User List": "Benutzerliste",
+      "View Calendar": "Kalender anzeigen",
+      "Create Shared View": "Gemeinsame Ansicht erstellen",
+      "Edit Shared View": "Gemeinsame Ansicht bearbeiten",
+      "Shared Mode Options": "Gemeinsamer Modus Optionen"
+    }
+  },
+  "CLieferscheine": {
+    "fields": {
+      "chargegereat": "Charge Gerät",
+      "lieferscheinnummer": "LS-Nr.",
+      "foreignSystemValue": "Externe ID",
+      "json": "Json",
+      "kundencdneu": "Kunden_cd_neu",
+      "kundenbaustcd": "Kunden_baust_cd",
+      "kundesnr": "Kunde_snr",
+      "liefadrsnr": "Lief_adr_snr",
+      "artikcd": "Artik_cd",
+      "artikanr": "Artik_anr",
+      "chargeGeraet": "Charge Gerät",
+      "liefmg": "Liefermenge",
+      "bemerkung": "Bemerkung",
+      "cArtikel": "Artikel",
+      "cKundenbaustelle": "Kundenbaustelle",
+      "cPruefberichte": "Prüfberichte",
+      "description": "interne Notizen E. Mayr"
+    },
+    "labels": {
+      "Create CLieferscheine": "Lieferschein erstellen"
+    },
+    "links": {
+      "cArtikel": "Artikel",
+      "cKundenbaustelle": "Kundenbaustelle",
+      "cPruefberichte": "Prüfberichte"
+    }
+  },
+  "CPruefberichte": {
+    "labels": {
+      "Create CPruefberichte": "Prüfbericht erstellen"
+    },
+    "fields": {
+      "emailAddress": "***PII***",
+      "sonstiges": "Sonstiges Ersatzteile Dosiergeräte",
+      "bemerkungen": "Bemerkungen",
+      "pruefDatum": "Prüfdatum",
+      "dosierung": "Dosierung",
+      "maschine": "Maschine",
+      "ersatzteile": "Ersatzteile",
+      "cLieferschein": "Lieferschein",
+      "cKundenbaustelle": "Kundenbaustelle",
+      "ersatzteileDosiergeraete": "Ersatzteile Dosiergeräte",
+      "ersatzteileSpraystation": "Ersatzteile Spraystation",
+      "ersatzteileAbfuellstation": "Ersatzteile Abfüllstation",
+      "chargeGeraet": "Seriennummer Gerät (falls vorhanden)",
+      "sonstigesErsatzteileSpraystation": "Sonstiges Ersatzteile Spraystation",
+      "anmerkungDosierung": "Anmerkung Dosierung",
+      "anmerkungMaschine": "Anmerkung Maschine",
+      "signatureImg": "Unterschrift",
+      "status": "Status",
+      "datumNaechstePruefung": "nächste Prüfung",
+      "signiertAm": "signiert am",
+      "artikel": "Artikel"
+    },
+    "options": {
+      "dosierung": {
+        "in ordnung": "in Ordnung",
+        "fehlerhaft": "fehlerhaft",
+        "nicht geprüft": "nicht geprüft"
+      },
+      "maschine": {
+        "in ordnung": "in Ordnung",
+        "fehlerhaft": "fehlerhaft",
+        "nicht geprüft": "nicht geprüft"
+      },
+      "ersatzteile": {
+        "ja": "ja",
+        "nein": "nein"
+      },
+      "ersatzteileDosiergeraete": {
+        "Schlauch": "Schlauch",
+        "Unterdruckleitungen": "Unterdruckleitungen",
+        "Pumpe": "Pumpe",
+        "Sonstiges": "Sonstiges"
+      },
+      "ersatzteileSpraystation": {
+        "3-Wege Ventil": "3-Wege Ventil",
+        "Ventura Ventil": "Ventura Ventil",
+        "Rückschlagventil": "Rückschlagventil",
+        "Sonstiges": "Sonstiges"
+      },
+      "ersatzteileAbfuellstation": {
+        "Zulaufschlauch": "Zulaufschlauch",
+        "Ablaufschlauch": "Ablaufschlauch"
+      },
+      "status": {
+        "signed": "unterschrieben",
+        "unsigned": "nicht unterschrieben"
+      }
+    },
+    "links": {
+      "cLieferschein": "Lieferschein",
+      "cKundenbaustelle": "Kundenbaustelle",
+      "artikel": "Artikel"
+    },
+    "presetFilters": {
+      "WithNextDateForTestReport": "mit Datum \"nächste Prüfung\""
+    },
+    "tooltips": {
+      "chargeGeraet": "wird autom. aus Lieferschein übernommen",
+      "sonstiges": "Ersatzteile Dosiergeräte"
+    }
+  },
+  "ActionHistoryRecord": {
+    "fields": {
+      "user": "Benutzer",
+      "action": "Aktion",
+      "createdAt": "Datum",
+      "target": "Ziel",
+      "targetType": "Zieltyp",
+      "ipAddress": "IP-Adresse",
+      "userType": "Benutzer-Typ"
+    },
+    "links": {
+      "user": "Benutzer",
+      "target": "Ziel"
+    },
+    "presetFilters": {
+      "onlyMy": "Nur meine"
+    },
+    "options": {
+      "action": {
+        "read": "Lesen",
+        "update": "Aktualisieren",
+        "delete": "Löschen",
+        "create": "Erstellen"
+      }
+    }
+  },
+  "Attachment": {
+    "insertFromSourceLabels": {
+      "Document": "Dokument einfügen"
+    },
+    "fields": {
+      "role": "Rolle",
+      "related": "Verbunden",
+      "file": "Datei",
+      "type": "Typ",
+      "field": "Feld",
+      "sourceId": "Quell-ID",
+      "storage": "Speicher",
+      "size": "Größe (Bytes)",
+      "isBeingUploaded": "Wird hochgeladen"
+    },
+    "options": {
+      "role": {
+        "Attachment": "Anhang",
+        "Inline Attachment": "Inline-Anhang",
+        "Import File": "Datei importieren",
+        "Export File": "Datei exportieren",
+        "Mail Merge": "Serienbrief",
+        "Mass Pdf": "Mass PDF"
+      }
+    },
+    "presetFilters": {
+      "orphan": "Waise"
+    }
+  },
+  "Currency": {
+    "names": {
+      "AED": "VAE Dirham",
+      "ALL": "Albanischer Lek",
+      "AMD": "Armenischer Dram",
+      "ANG": "Niederländischer Antillengulden",
+      "AOA": "Angolanischer Kwanza",
+      "ARS": "Argentinischer Peso",
+      "AUD": "Australischer Dollar",
+      "AWG": "Arubischer Florin",
+      "AZN": "Aserbaidschanischer Manat",
+      "BAM": "Bosnien-Herzegowina Wandelanleihe Mark",
+      "BBD": "Barbadischer Dollar",
+      "BDT": "Bangladescher Taka",
+      "BGN": "Bulgarischer Lew",
+      "BHD": "Bahrainischer Dinar",
+      "BIF": "Burundischer Franc",
+      "BMD": "Bermuda-Dollar",
+      "BND": "Brunei-Dollar",
+      "BOB": "Bolivianischer Boliviano",
+      "BOV": "Bolivianischer Mvdol",
+      "BRL": "Brasilianischer Real",
+      "BSD": "Bahamischer Dollar",
+      "BTN": "Bhutanisches Ngultrum",
+      "BWP": "Botsuana Pula",
+      "BYN": "Weißrussischer Rubel",
+      "BZD": "Belize-Dollar",
+      "CAD": "Kanadischer Dollar",
+      "CDF": "Kongolesischer Franc",
+      "CHF": "Schweizer Franken",
+      "CLF": "Chilenische Rechnungseinheit (UF)",
+      "CLP": "Chilenischer Peso",
+      "CNH": "Chinesischer Yuan (offshore)",
+      "CNY": "Chinesischer Yuan",
+      "COP": "Kolumbianischer Peso",
+      "COU": "Kolumbianische Realwerteinheit",
+      "CRC": "Costa Ricanischer Colon",
+      "CUC": "Kubanischer konvertierbarer Peso",
+      "CUP": "Kubanischer Peso",
+      "CVE": "Kapverdischer Escudo",
+      "CZK": "Tschechische Krone",
+      "DJF": "Dschibutischer Franc",
+      "DKK": "Dänische Krone",
+      "DOP": "Dominikanischer Peso",
+      "DZD": "Algerischer Dinar",
+      "EGP": "Ägyptisches Pfund",
+      "ERN": "Eritreischer Nakfa",
+      "ETB": "Äthiopisches Birr",
+      "FJD": "Fidschianischer Dollar",
+      "FKP": "Falkland-Inseln Pfund",
+      "GBP": "Britisches Pfund",
+      "GEL": "Georgischer Lari",
+      "GHS": "Ghanaischer Cedi",
+      "GIP": "Gibraltar-Pfund",
+      "GMD": "Gambischer Dalasi",
+      "GNF": "Guineischer Franc",
+      "GTQ": "Guatemaltekischer Quetzal",
+      "GYD": "Guyana-Dollar",
+      "HKD": "Hongkong-Dollar",
+      "HNL": "Honduranisches Lempira",
+      "HRK": "Kroatische Kuna",
+      "HTG": "Haitianischer Gurde",
+      "HUF": "Ungarischer Forint",
+      "IDR": "Indonesische Rupiah",
+      "ILS": "Israelischer Neu-Schekel",
+      "INR": "Indische Rupie",
+      "IQD": "Irakischer Dinar",
+      "IRR": "Iranische Rial",
+      "ISK": "Isländische Króna",
+      "JMD": "Jamaikanischer Dollar",
+      "JOD": "Jordanischer Dinar",
+      "JPY": "Japanischer Yen",
+      "KES": "Kenianischer Schilling",
+      "KGS": "Kirgisistan Som",
+      "KHR": "Kambodschanisch Riel",
+      "KMF": "Komoren-Franc",
+      "KPW": "Nordkoreanischer Won",
+      "KRW": "Südkoreanischer Won",
+      "KWD": "Kuwaitischer Dinar",
+      "KYD": "Kaiman-Dollar",
+      "KZT": "Kasachstanischer Tenge",
+      "LAK": "Laotischer Kip",
+      "LBP": "Libanesisches Pfund",
+      "LKR": "Srilankische Rupie",
+      "LRD": "Liberianischer Dollar",
+      "LYD": "Libyscher Dinar",
+      "MAD": "Marokkanischer Dirham",
+      "MDL": "Moldauischer Leu",
+      "MGA": "Madagaskar-Ariar",
+      "MKD": "Mazedonischer Denar",
+      "MNT": "Mongolischer Tugrik",
+      "MOP": "Macao-Pataca",
+      "MRO": "Mauretanische Ouguiya",
+      "MUR": "Mauritianische Rupie",
+      "MWK": "Malawischer Kwacha",
+      "MXN": "Mexikanischer Peso",
+      "MXV": "Mexikanische Investitionseinheit",
+      "MYR": "Malaysischer Ringgit",
+      "MZN": "Mosambikanisch Metical",
+      "NAD": "Namibischer Dollar",
+      "NGN": "Nigerianische Naira",
+      "NIO": "Nicaragua Cordoba",
+      "NOK": "Norwegische Krone",
+      "NPR": "Nepalesische Rupie",
+      "NZD": "Neuseeländischer Dollar",
+      "OMR": "Omanische Rial",
+      "PAB": "Panamaischer Balboa",
+      "PEN": "Peruanischer Sol",
+      "PGK": "Papua-Neuguinea-Kina",
+      "PHP": "Philippinisch Piso",
+      "PKR": "Pakistanische Rupie",
+      "PLN": "Polnischer Zloty",
+      "PYG": "Paraguayische Guarani",
+      "QAR": "Katarisches Rial",
+      "RON": "Rumänischer Leu",
+      "RSD": "Serbischer Dinar",
+      "RUB": "Russischer Rubel",
+      "RWF": "Ruandischer Franc",
+      "SBD": "Salomonen-Dollar",
+      "SCR": "Seychellen-Rupie",
+      "SDG": "Sudanesisches Pfund",
+      "SEK": "Schwedische Krone",
+      "SGD": "Singapur-Dollar",
+      "SHP": "St. Helena-Pfund",
+      "SLL": "Sierra Leone Leone",
+      "SOS": "Somalischer Schilling",
+      "SRD": "Surinamischer Dollar",
+      "SSP": "Südsudanesisches Pfund",
+      "SYP": "Syrisches Pfund",
+      "SZL": "Swasi Lilangeni",
+      "SVC": "Salvadorianischer Colón",
+      "THB": "Thailändischer Baht",
+      "TJS": "Tadschikistanisch-Somoni",
+      "TND": "Tunesischer Dinar",
+      "TOP": "Tonganer Paʻanga",
+      "TRY": "Türkische Lira",
+      "TTD": "Trinidad & Tobago-Dollar",
+      "TWD": "Neuer Taiwan-Dollar",
+      "TZS": "Tansanischer Schilling",
+      "UAH": "Ukrainische Griwna",
+      "UGX": "Ugandischer Schilling",
+      "USD": "US-Dollar",
+      "USN": "US-Dollar (Nächster Tag)",
+      "UYI": "Uruguayischer Peso (indizierte Einheiten)",
+      "UYU": "Uruguayischer Peso",
+      "UZS": "Usbekistanischer Som",
+      "VEF": "Venezuelanischer Bolivar",
+      "VND": "Vietnamesischer Dong",
+      "WST": "Samoanisches Tala",
+      "XAF": "Zentralafrikanischer CFA-Franc",
+      "XCD": "Ostkaribischer Dollar",
+      "XOF": "Westafrikanischer CFA-Franc",
+      "XPF": "CFP-Franc",
+      "YER": "Jemenitische Rial",
+      "ZAR": "Südafrikanischer Rand",
+      "ZMW": "Sambisches Kwacha",
+      "ZWL": "Simbabwe-Dollar"
+    }
+  },
+  "EmailFolder": {
+    "fields": {
+      "skipNotifications": "Benachrichtigungen überspringen"
+    },
+    "labels": {
+      "Create EmailFolder": "Ordner erstellen",
+      "Manage Folders": "Ordner verwalten",
+      "Emails": "E-Mails"
+    }
+  },
+  "Export": {
+    "fields": {
+      "fieldList": "Feldliste",
+      "exportAllFields": "Exportieren alle Felder",
+      "xlsxRecordLinks": "Datensatzverknüpfungen",
+      "xlsxTitle": "Titel"
+    },
+    "options": {
+      "status": {
+        "Pending": "Ausstehend",
+        "Running": "In Bearbeitung",
+        "Success": "Erfolgreich",
+        "Failed": "Fehlgeschlagen"
+      }
+    },
+    "messages": {
+      "exportProcessed": "Export wurde verarbeitet. [Datei]({url}) herunterladen.",
+      "infoText": "Der Export wird im Leerlauf von cron verarbeitet. Es kann einige Zeit dauern, bis er abgeschlossen ist. Das Schließen dieses modalen Dialogs hat keinen Einfluss auf den Ausführungsprozess."
+    },
+    "tooltips": {
+      "xlsxLite": "Verbraucht viel weniger Speicher. Empfohlen, wenn eine große Anzahl von Datensätzen exportiert wird.",
+      "xlsxTitle": "Druckt eine Überschrift und das aktuelle Datum in der Kopfzeile."
+    }
+  },
+  "Formula": {
+    "labels": {
+      "Check Syntax": "Syntax prüfen",
+      "Run": "Ausführen"
+    },
+    "fields": {
+      "target": "Ziel",
+      "targetType": "Ziel Typ",
+      "script": "Skript",
+      "output": "Ausgabe",
+      "error": "Fehler"
+    },
+    "messages": {
+      "runSuccess": "Erfolgreich ausgeführt",
+      "runError": "Fehler.",
+      "checkSyntaxSuccess": "Syntax ist richtig.",
+      "checkSyntaxError": "Syntax Fehler.",
+      "emptyScript": "Skript ist leer."
+    },
+    "tooltips": {
+      "output": "Werte können mit der Funktion `output\\printLine` ausgegeben werden."
+    }
+  },
+  "GroupEmailFolder": {
+    "links": {
+      "emails": "E-Mails"
+    },
+    "labels": {
+      "Create GroupEmailFolder": "Ordner erstellen"
+    }
+  },
+  "MassAction": {
+    "fields": {
+      "processedCount": "Verarbeitet"
+    },
+    "options": {
+      "status": {
+        "Pending": "Ausstehend",
+        "Running": "In Verarbeitung",
+        "Success": "Erfolgreich",
+        "Failed": "Fehlgeschlagen"
+      }
+    },
+    "messages": {
+      "infoText": "Die Massenaktion wird im Leerlauf vom Cron verarbeitet. Es kann einige Zeit dauern, bis sie abgeschlossen ist. Das Schließen dieses Dialogs hat keinen Einfluss auf die Ausführung des Prozesses."
+    }
+  },
+  "PortalUser": {
+    "labels": {
+      "Create PortalUser": "Erstelle Portal User"
+    }
+  },
+  "Team": {
+    "fields": {
+      "roles": "Rollen",
+      "positionList": "Positionsbezeichnungen",
+      "layoutSet": "Layout-Set",
+      "workingTimeCalendar": "Arbeitszeitkalender",
+      "userRole": "Benutzerrolle"
+    },
+    "links": {
+      "users": "Benutzer",
+      "notes": "Notizen",
+      "roles": "Rollen",
+      "inboundEmails": "Gruppen E-Mail Konten",
+      "layoutSet": "Layout-Set",
+      "workingTimeCalendar": "Arbeitszeitkalender",
+      "groupEmailFolders": "E-Mail Gruppenordner"
+    },
+    "tooltips": {
+      "roles": "Benutzer dieses Teams erben alle Zugriffsberechtigungen von der ausgewählten Rollen.",
+      "positionList": "Verfügbare Positionen in diesem Team. Z.B. Verkäufer, Manager etc.",
+      "layoutSet": "Bietet die Möglichkeit, von Standard-Layouts abweichende Layouts zu haben. Layoutsatz wird auf Benutzer angewendet, die dieses Team als Standardteam festgelegt haben.",
+      "workingTimeCalendar": "Ein Kalender wird auf Benutzer angewendet, die dieses Team als Standardteam festgelegt haben."
+    },
+    "labels": {
+      "Create Team": "Team erstellen"
+    }
+  },
+  "Template": {
+    "fields": {
+      "body": "Inhalt",
+      "entityType": "Entitätstyp",
+      "header": "Kopfzeile",
+      "footer": "Fußzeile",
+      "leftMargin": "Linker Rand",
+      "topMargin": "Oberer Rand",
+      "rightMargin": "Rechter Rand",
+      "bottomMargin": "Unterer Rand",
+      "printFooter": "Fußzeile drucken",
+      "footerPosition": "Fußzeile Position",
+      "variables": "Verfügbare Platzhalter",
+      "pageOrientation": "Seitenausrichtung",
+      "pageFormat": "Papierformat",
+      "fontFace": "Schriftart",
+      "pageWidth": "Seitenbreite (mm)",
+      "pageHeight": "Seitenhöhe (mm)",
+      "headerPosition": "Kopfzeilen-Position",
+      "printHeader": "Header ausgeben",
+      "title": "Titel"
+    },
+    "labels": {
+      "Create Template": "Vorlage erstellen"
+    },
+    "tooltips": {
+      "footer": "Verwenden Sie den Platzhalter {pageNumber}, um eine Seitennummer zu drucken.",
+      "variables": "Kopieren und fügen Sie benötigte Platzhalter in die Kopfzeile, den Inhalt oder in die Fußzeile ein."
+    },
+    "options": {
+      "pageOrientation": {
+        "Portrait": "Hochformat",
+        "Landscape": "Querformat"
+      },
+      "placeholders": {
+        "today": "Heute (Datum)",
+        "now": "Jetzt (Datum-Uhrzeit)",
+        "pagebreak": "Seitenumbruch"
+      },
+      "pageFormat": {
+        "Custom": "Benutzer"
+      }
+    }
+  },
+  "CArtikel": {
+    "labels": {
+      "Create CArtikel": "Artikel erstellen"
+    },
+    "fields": {
+      "foreignSystemValue": "Artikelnummer",
+      "json": "Json",
+      "artiksnr": "Artik_snr",
+      "artikmc": "Artikelname",
+      "cLieferscheine": "Lieferscheine",
+      "pruefberichte": "Pruefberichte"
+    },
+    "links": {
+      "cLieferscheine": "Lieferscheine",
+      "pruefberichte": "Pruefberichte"
+    }
+  },
+  "CEmayrQrs": {
+    "labels": {
+      "Create CEmayrQrs": "QR-Code erstellen"
+    },
+    "fields": {
+      "artnr": "Artnr.",
+      "title": "Bezeichnung",
+      "url": "Url",
+      "korrekt": "Korrekt",
+      "emayrTracks": "QR-Code-Trackings",
+      "qrCode": "QR-Code"
+    },
+    "links": {
+      "emayrTracks": "QR-Code-Trackings"
+    },
+    "presetFilters": {
+      "Invalid": "Fehlerhafte Codes"
+    }
+  },
+  "CEmayrTracks": {
+    "labels": {
+      "Create CEmayrTracks": "Track erstellen"
+    },
+    "fields": {
+      "qr": "Produkt"
+    },
+    "links": {
+      "qr": "Qr"
+    }
+  },
+  "CKundenbaustellen": {
+    "labels": {
+      "Create CKundenbaustellen": "Kundenbaustelle erstellen"
+    },
+    "fields": {
+      "foreignSystemValue": "Externe ID",
+      "kundesnr": "Kunde_snr",
+      "name1": "Name1",
+      "name2": "Name2",
+      "strasse": "Strasse",
+      "plz": "Plz",
+      "ort": "Ort",
+      "kundebaustcd": "Baustellencode",
+      "json": "Json",
+      "cLieferscheine": "Lieferscheine",
+      "cPruefberichte": "Prüfberichte",
+      "description": "interne Notizen E. Mayr",
+      "kundecd": "Kundennummer"
+    },
+    "links": {
+      "cLieferscheine": "Lieferscheine",
+      "cPruefberichte": "Prüfberichte"
+    }
+  },
+  "SignatureApp": {
+    "labels": {
+      "signature": "Unterschrift",
+      "sign here": "Bitte unterschreiben Sie innerhalb der blauen Linie",
+      "clear": "Zurücksetzen",
+      "sign": "Unterschreiben"
+    }
+  },
+  "Settings": {
+    "options": {
+      "auth2FAMethodList": {
+        "Totp": "TOTP",
+        "Email": "E-Mail",
+        "Sms": "SMS"
+      }
+    }
+  },
+  "Admin": {
+    "messages": {
+      "userHasNoEmailAddress": "Der Benutzer hat keine E-Mail Adresse."
+    }
+  }
+}

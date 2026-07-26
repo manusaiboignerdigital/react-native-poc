@@ -1,0 +1,17 @@
+[
+  {
+    "name": "name",
+    "width": 60,
+    "link": true,
+    "align": "left"
+  },
+  {
+    "name": "pruefDatum"
+  },
+  {
+    "name": "status"
+  },
+  {
+    "name": "datumNaechstePruefung"
+  }
+]
