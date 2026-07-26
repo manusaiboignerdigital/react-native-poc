@@ -23,7 +23,10 @@ zeigen (non-destructive: schreibt bestehende Werte unverändert zurück).
 
 `.env` ist gitignored — Zugangsdaten niemals committen.
 
-**Stand:** Ein erster Lauf gegen `http://emayr.local` ist erfolgt, die Befunde
+**Stand:** Zwei Läufe gegen `http://emayr.local` sind erfolgt, die Befunde
 stehen in `docs/API-NOTES.md`. Wesentliche Abweichungen von PLAN.md: es gibt
-keine Eingangsrechnungs-Entität (Scope-Anpassung nötig), Optimistic Concurrency
-ist nicht aktiv, und CORS ist wie erwartet blockiert (→ Vite-Proxy).
+keine Eingangsrechnungs-Entität — der Scope ist stattdessen
+**`CPruefberichte` + `CEmayrQrs`**; Optimistic Concurrency ist nicht aktiv
+(kein `versionNumber`, kein 409); CORS ist wie erwartet blockiert (→ Vite-Proxy);
+und die Feldtypen `checklist`, `image` und `barcode` brauchen in Phase 2
+Registry-Einträge bzw. den Fallback-Renderer.

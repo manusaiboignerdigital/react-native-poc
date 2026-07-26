@@ -1,4 +1,4 @@
-Probe gegen http://emayr.local/api/v1 — 2026-07-26T13:47:47.489Z
+Probe gegen http://emayr.local/api/v1 — 2026-07-26T14:13:14.220Z
 
 == A3: GET App/user ==
   -> fixtures/app-user.json geschrieben
@@ -14,17 +14,23 @@ Probe gegen http://emayr.local/api/v1 — 2026-07-26T13:47:47.489Z
   Entitäten mit clientDefs.dynamicLogic (A8): CEmayrQrs
   -> fixtures/dynamic-logic-examples.json geschrieben
   Feldtypen CPruefberichte: varchar(6), text(2), datetime(3), link(6), linkMultiple(1), date(3), enum(4), checklist(3), image(1), email(1), bool(2)
+  Feldtypen CEmayrQrs: varchar(4), text(1), datetime(3), link(3), linkMultiple(1), bool(1), barcode(1)
 
 == A2: GET I18n ==
   -> fixtures/i18n.json geschrieben
   Top-Level-Keys (Scopes): DashletOptions, EmailAccount, EmailFilter, Global, Integration, Note, Preferences, Stream, User, Calendar, CLieferscheine, CPruefberichte, ActionHistoryRecord, Attachment, Currency ...
   CPruefberichte.options-Felder: dosierung, maschine, ersatzteile, ersatzteileDosiergeraete, ersatzteileSpraystation, ersatzteileAbfuellstation, status
+  CEmayrQrs.options: nicht vorhanden
 
 == A4: Layout-Pfad ermitteln ==
   OK: GET api/v1/CPruefberichte/layout/detail (HTTP 200)
   -> fixtures/layout-CPruefberichte-detail.json geschrieben
   OK: GET api/v1/CPruefberichte/layout/list (HTTP 200)
   -> fixtures/layout-CPruefberichte-list.json geschrieben
+  OK: GET api/v1/CEmayrQrs/layout/detail (HTTP 200)
+  -> fixtures/layout-CEmayrQrs-detail.json geschrieben
+  OK: GET api/v1/CEmayrQrs/layout/list (HTTP 200)
+  -> fixtures/layout-CEmayrQrs-list.json geschrieben
   ERGEBNIS A4: Layout-Pfad = api/v1/{Entity}/layout/{name}
 
 == A5/A6/A7: Listen, Pagination, where auf modifiedAt ==
@@ -32,7 +38,7 @@ Probe gegen http://emayr.local/api/v1 — 2026-07-26T13:47:47.489Z
   -> fixtures/list-CPruefberichte.json geschrieben
   A7: assignedUserId=true assignedUserName=true teamsIds=true teamsNames=true
   maxSize=500 akzeptiert, geliefert=1 (Obergrenze beachten)
-  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 13:47:47] -> total=1
+  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 14:13:14] -> total=1
   -> fixtures/list-CPruefberichte-delta.json geschrieben
 
 == A9: Optimistic Concurrency (versionNumber) ==

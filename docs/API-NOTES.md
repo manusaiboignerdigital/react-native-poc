@@ -3,15 +3,21 @@
 > Status-Legende: ✅ an der Instanz verifiziert · 📚 per offizieller Doku belegt ·
 > ⚠️ Abweichung von der Plan-Annahme · ⏳ offen / nicht abschließend geklärt.
 >
-> **Verifiziert am:** 2026-07-26 gegen `http://emayr.local` (Probe-Lauf:
+> **Verifiziert am:** 2026-07-26 gegen `http://emayr.local`, zwei Läufe
+> (zuletzt 14:13 UTC mit dem Scope `CPruefberichte,CEmayrQrs`; Report:
 > [`fixtures/probe-report.txt`](../fixtures/probe-report.txt), erzeugt von
 > `scripts/probe.mjs`). Diese Befunde sind gegenüber den Annahmen in PLAN.md
 > **verbindlich**.
 >
-> **Hinweis zu den Fixtures:** Der Probe-Lauf fand auf dem Entwicklerrechner
+> **Hinweis zu den Fixtures:** Die Probe-Läufe fanden auf dem Entwicklerrechner
 > statt (die Instanz ist nur im lokalen Netz erreichbar). Bisher liegt nur der
 > Report im Repo; die JSON-Fixtures müssen noch aus dem lokalen `fixtures/`
 > übernommen werden (siehe [fixtures/README.md](../fixtures/README.md)).
+>
+> **Noch nicht nachgeprüft:** Beide Läufe nutzten die Skriptversion *vor* den
+> Nachschärfungen (Commit `7fafedd`). Die dort ergänzten Auswertungen —
+> `maxSize`-Leiter, Operator-Liste für den Evaluator, `logicDefs`,
+> Feldtypen-Zensus, expliziter A9-Befund — liefert erst der nächste Lauf.
 
 ## Basis
 
@@ -50,8 +56,10 @@ GET api/v1/{Entity}/layout/{name}      → HTTP 200
 ```
 
 Der erste Kandidat trifft zu; `Layout/{scope}/{name}` wurde nicht benötigt.
-Geprüft für `CPruefberichte` mit `detail` und `list`
-(→ `fixtures/layout-CPruefberichte-detail.json`, `-list.json`).
+Geprüft für **beide Scope-Entitäten** mit `detail` und `list` — alle vier
+Layouts liegen vor (→ `fixtures/layout-CPruefberichte-{detail,list}.json`,
+`fixtures/layout-CEmayrQrs-{detail,list}.json`). Damit sind für Phase 2 zwei
+vollständige Layout-Sätze zum Rendern vorhanden.
 
 ## A5 — Listen: Pagination & Parameter ✅ (Limit ⏳)
 
@@ -106,7 +114,9 @@ Im Listen-Ergebnis mit `select=…,assignedUserId,assignedUserName,teamsIds,team
 
 - Pfad `clientDefs.{Entity}.dynamicLogic` bestätigt ✅
 - Auf dieser Instanz nutzt **nur `CEmayrQrs`** Dynamic Logic
-  (→ `fixtures/dynamic-logic-examples.json`).
+  (→ `fixtures/dynamic-logic-examples.json`) — in beiden Läufen bestätigt.
+  `CEmayrQrs` ist deshalb im Scope: ohne diese Entität hätte Phase 3 keine
+  echte Bedingung zum Testen.
 - ⏳ Die konkret verwendeten Operatoren sind aus dem Report nicht ersichtlich und
   müssen vor Phase 3 aus dem Fixture ausgelesen werden. Der Evaluator bekommt
   ohnehin einen Fallback (unbekannter Operator → `true` + Warnung).
@@ -171,30 +181,53 @@ CArtikel, CEmayrQrs, CEmayrTracks, CKundenbaustellen, CLieferscheine, CPruefberi
 Es gibt **keine Eingangsrechnungs-Entität**. Die Instanz bildet eine andere
 Domäne ab (Prüfberichte, Lieferscheine, Artikel, Kundenbaustellen).
 
-→ **Scope-Anpassung nötig.** Als Ersatz für die Rolle „fachlich reiche
-Custom-Entität" bietet sich **`CPruefberichte`** an: viele Feldtypen, Links,
-Enums und als einzige geprüfte Entität mit vollständigem Layout-Satz.
-`CEmayrQrs` ist als **zweite** Entität interessant, weil dort die einzige
-Dynamic Logic der Instanz hängt (Phase 3). Siehe „Offene Punkte".
+→ **Scope-Anpassung erfolgt.** An die Stelle der Eingangsrechnung treten:
 
-## Feldtypen-Inventar `CPruefberichte`
+| Entität | Rolle im Prototyp |
+|---|---|
+| `CPruefberichte` | fachlich reiche Entität: 11 Feldtypen, 6 `link`-Felder, 4 Enums mit übersetzten Options |
+| `CEmayrQrs` | einzige Entität mit Dynamic Logic → Grundlage für Phase 3 |
 
-```
-varchar(6), text(2), datetime(3), date(3), enum(4), bool(2),
-link(6), linkMultiple(1), checklist(3), image(1), email(1)
-```
+Beide sind mit dem Lauf vom 14:13 UTC vollständig geprobt (Layouts, Feldtypen,
+I18n). `CLieferscheine` bliebe als dritte Entität verfügbar, wird für die
+Akzeptanzkriterien aber nicht gebraucht.
 
-⚠️ **Relevant für Phase 2:** Die Typen **`checklist`** (3 Felder!) und **`image`**
-stehen nicht auf der Registry-Liste in PLAN.md Phase 2.
+## Feldtypen-Inventar der Scope-Entitäten
 
-- `checklist` — häufig genug, um einen echten Renderer zu rechtfertigen
-  (Mehrfachauswahl-Set aus `options`, ähnlich `multiEnum`).
-- `image` — fällt unter das Nicht-Ziel „Attachments/Dateien"; bewusst über den
-  **Fallback-Renderer** abbilden (Rohwert + Typ), nicht implementieren.
+| Typ | `CPruefberichte` | `CEmayrQrs` | in PLAN.md Phase 2 vorgesehen |
+|---|---|---|---|
+| `varchar` | 6 | 4 | ✅ |
+| `text` | 2 | 1 | ✅ |
+| `datetime` | 3 | 3 | ✅ |
+| `date` | 3 | – | ✅ |
+| `enum` | 4 | – | ✅ |
+| `bool` | 2 | 1 | ✅ |
+| `link` | 6 | 3 | ✅ |
+| `linkMultiple` | 1 | 1 | ✅ |
+| `email` | 1 | – | ✅ |
+| `checklist` | 3 | – | ⚠️ **fehlt** |
+| `image` | 1 | – | ⚠️ **fehlt** |
+| `barcode` | – | 1 | ⚠️ **fehlt** |
 
-Umgekehrt kamen `int`, `float`, `currency`, `phone`, `url` und `multiEnum` in
-dieser Entität nicht vor — die Registry-Einträge dafür bleiben trotzdem sinnvoll
-(andere Entitäten/Standardfelder), sind aber nicht die Priorität.
+⚠️ **Relevant für Phase 2 — drei Typen fehlen in der Registry-Liste:**
+
+- **`checklist`** (3 Felder) — häufig genug für einen echten Renderer:
+  Mehrfachauswahl-Set aus `options`, im Prinzip wie `multiEnum`. Da `multiEnum`
+  auf dieser Instanz gar nicht vorkommt, ersetzt `checklist` es faktisch.
+- **`image`** — fällt unter das Nicht-Ziel „Attachments/Dateien". Bewusst über
+  den **Fallback-Renderer** abbilden (Rohwert + Typ), nicht implementieren.
+- **`barcode`** — Einzelfeld in `CEmayrQrs`; im Detail-Modus als Text
+  darstellbar, im Edit-Modus wie `varchar` behandelbar. Ein echter
+  Barcode-/QR-Renderer ist für den Prototyp nicht nötig.
+
+Damit ist der Fallback-Renderer aus PLAN.md Phase 2 keine reine Vorsichtsmaßnahme,
+sondern wird von dieser Instanz **real gebraucht** — ein guter Testfall für die
+Zusicherung „die Engine crasht nie".
+
+Nicht vorhanden in beiden Scope-Entitäten: `int`, `float`, `currency`, `phone`,
+`url`, `multiEnum`. Die Registry-Einträge dafür bleiben sinnvoll (Standardfelder
+anderer Entitäten), haben aber keine Priorität. Ein instanzweiter Feldtypen-Zensus
+folgt mit dem nächsten Probe-Lauf.
 
 ## I18n: Enum-Options-Übersetzungen ✅
 
@@ -206,21 +239,33 @@ dosierung, maschine, ersatzteile, ersatzteileDosiergeraete,
 ersatzteileSpraystation, ersatzteileAbfuellstation, status
 ```
 
+`CEmayrQrs` hat **keinen** `options`-Block — konsistent, denn die Entität
+enthält keine `enum`-Felder. Die Übersetzungskette wird also nur über
+`CPruefberichte` ausgeübt.
+
+⏳ Zu prüfen: Die drei `checklist`-Felder von `CPruefberichte` erscheinen
+**nicht** unter den `options`-Feldern. Im `i18n.json`-Fixture nachsehen, wo
+deren Auswahlwerte übersetzt sind (evtl. eigener Block oder nur in
+`entityDefs.…fields.{field}.options`) — relevant für den `checklist`-Renderer.
+
 I18n-Scopes umfassen u. a. `Global`, `User`, `Preferences`, `Stream`,
 `CLieferscheine`, `CPruefberichte` — Labels also pro Entität abrufbar.
 Fallback-Kette für die Engine: `{Entity}.options.{field}` → `Global.options.{field}` → Rohwert.
 
 ## Offene Punkte / Entscheidungen für Phase 1
 
-1. **Entitäten-Scope festlegen** (ersetzt „Eingangsrechnung" aus PLAN.md).
-   Vorschlag: `CPruefberichte` (Renderer-Breite) + `CEmayrQrs` (Dynamic Logic),
-   optional `CLieferscheine`. Ob `Contact`/`Account` auf dieser Instanz
-   überhaupt aktiv sind, aus `metadata.json` bestätigen.
+1. ✅ **Entitäten-Scope festgelegt:** `CPruefberichte` + `CEmayrQrs`
+   (siehe A11). Ersetzt „Eingangsrechnung" aus PLAN.md.
 2. **A9-Entscheidung:** Optimistic Concurrency Control im Entity Manager
    aktivieren (dann A9 nachproben) — oder Konflikterkennung als dokumentierte
-   Prototyp-Grenze führen.
-3. **`maxSize`-Limit** mit einer datenreichen Entität nachtesten (der zweite
-   Probe-Lauf erledigt das automatisch); bis dahin 200.
+   Prototyp-Grenze führen. **Blockiert die Konflikt-Demo aus Phase 5.**
+3. **Datenlage für Phase 4:** `CPruefberichte` enthält aktuell **1 Datensatz**.
+   Das Akzeptanzkriterium „≥ 1.000 Datensätze paginiert repliziert" ist so nicht
+   erfüllbar. Optionen: Testdaten in der Instanz anlegen, eine datenreichere
+   Entität in den Scope nehmen, oder das Kriterium bewusst absenken.
+   Zugleich bleibt damit das `maxSize`-Limit ungeklärt (bis dahin 200).
 4. **JSON-Fixtures** aus dem lokalen Lauf ins Repo übernehmen — sie sind die
    Grundlage der Phase-2-Engine und der Phase-3-Unit-Tests.
-5. **`logicDefs`** im Metadata-Fixture inspizieren (siehe A8).
+5. **Aus den Fixtures nachtragen** (oder per erneutem Probe-Lauf mit der
+   aktuellen Skriptversion automatisch): verwendete `conditionGroup`-Operatoren,
+   Inhalt von `logicDefs` (A8), Übersetzungsort der `checklist`-Options.
