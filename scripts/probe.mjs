@@ -364,12 +364,16 @@ function makeTestValues(def, current, stamp) {
  * false, wenn schon der erste Schreibversuch scheiterte (nächstes Feld probieren).
  */
 async function runConflictTest(entity, id, field, original, { a, b }, v0) {
+  // Die Version reist im Header X-Version-Number, nicht im Payload.
+  const versionHeader = (v) => (typeof v === 'number' ? { 'X-Version-Number': String(v) } : {});
+
   // Schritt 1: echte Wertänderung mit aktueller Version -> neue Version
   const { res: res1, json: json1 } = await api(`${entity}/${id}`, {
     method: 'PUT', raw: true,
-    body: { [field]: a, ...(typeof v0 === 'number' ? { versionNumber: v0 } : {}) },
+    headers: versionHeader(v0),
+    body: { [field]: a },
   });
-  log(`  [1] PUT ${field}=${JSON.stringify(a)} mit versionNumber=${v0 ?? '(keine)'} -> HTTP ${res1.status}`);
+  log(`  [1] PUT ${field}=${JSON.stringify(a)} mit X-Version-Number=${v0 ?? '(keiner)'} -> HTTP ${res1.status}`);
   if (!res1.ok) {
     log(`      X-Status-Reason: ${res1.headers.get('X-Status-Reason') || '(keiner)'}`);
     return false;
@@ -386,9 +390,10 @@ async function runConflictTest(entity, id, field, original, { a, b }, v0) {
   } else {
     const { res: res2 } = await api(`${entity}/${id}`, {
       method: 'PUT', raw: true,
-      body: { [field]: b, versionNumber: stale },
+      headers: versionHeader(stale),
+      body: { [field]: b },
     });
-    log(`  [2] PUT ${field}=${JSON.stringify(b)} (abweichend) mit veralteter versionNumber=${stale} -> HTTP ${res2.status}`);
+    log(`  [2] PUT ${field}=${JSON.stringify(b)} (abweichend) mit veraltetem X-Version-Number=${stale} -> HTTP ${res2.status}`);
     if (res2.status !== 409) {
       log(`      X-Status-Reason: ${res2.headers.get('X-Status-Reason') || '(keiner)'}`);
     }
@@ -401,10 +406,8 @@ async function runConflictTest(entity, id, field, original, { a, b }, v0) {
   const fresh = await api(`${entity}/${id}`);
   const { res: res3 } = await api(`${entity}/${id}`, {
     method: 'PUT', raw: true,
-    body: {
-      [field]: original,
-      ...(typeof fresh.versionNumber === 'number' ? { versionNumber: fresh.versionNumber } : {}),
-    },
+    headers: versionHeader(fresh.versionNumber),
+    body: { [field]: original },
   });
   log(`  [3] Aufräumen: ${field} auf ${JSON.stringify(original)} zurück -> HTTP ${res3.status}` +
       (res3.ok ? '' : ' — WARNUNG: bitte manuell prüfen!'));

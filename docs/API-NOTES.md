@@ -166,6 +166,16 @@ Bestätigt durch den Lauf vom 20:19 UTC:
 - `versionNumber` liegt im **GET-Response** des Datensatzes (Wert `15`) ✅
   → Der Client kann `baseVersionNumber` für die Outbox (Phase 5) direkt beim
   Replizieren mitnehmen; kein Zusatz-Request nötig.
+- ⚠️ **Die Version wird im HTTP-Header `X-Version-Number` gesendet, nicht im
+  Payload.** Ein `versionNumber`-Feld im PUT-Body wird ignoriert — der Request
+  liefe dann ohne Konfliktprüfung durch. Das ist der Punkt, an dem der
+  `espoClient` in Phase 5 aufsetzen muss:
+
+  ```
+  PUT api/v1/{Entity}/{id}
+  X-Version-Number: 15
+  { "maschine": "fehlerhaft" }        // Version NICHT im Body
+  ```
 
 Der 409 selbst ist noch nicht nachgewiesen — beide bisherigen Testvarianten
 waren fehlerhaft:
@@ -186,10 +196,10 @@ waren fehlerhaft:
 
 **Umgebauter Test** (`scripts/probe.mjs`, Schritte im Report nummeriert):
 
-1. `PUT {feld: A}` mit aktueller `versionNumber` → erzeugt eine neue Version.
-2. `PUT {feld: B}` — abweichender Wert — mit der **veralteten** `versionNumber`
+1. `PUT {feld: A}` mit `X-Version-Number` der aktuellen Version → neue Version.
+2. `PUT {feld: B}` — abweichender Wert — mit **veraltetem** `X-Version-Number`
    → hier muss HTTP 409 kommen.
-3. Aufräumen: Ausgangswert mit frischer Version zurückschreiben.
+3. Aufräumen: Ausgangswert mit frischem `X-Version-Number` zurückschreiben.
 
 Die Testwerte richten sich jetzt nach dem **Feldtyp**: bei `enum` zwei
 verschiedene gültige Optionen, bei `checklist`/`multiEnum`/`array` zwei
@@ -199,8 +209,8 @@ abgelehnt, probiert das Skript automatisch das **nächste Kandidatenfeld** —
 `ESPOCRM_TEST_FIELD` steht dabei an erster Stelle, `readOnly`- und
 `notStorable`-Felder bleiben außen vor. Ein leerer Ausgangswert wird als `null`
 zurückgeschrieben (`""` ist für Enums ungültig). Alle Pfade — Enum, Textfeld,
-Ablehnung mit Ausweichen, `versionNumber` nur im PUT-Response — sind gegen
-einen Mock mit Espo-Semantik verifiziert.
+Ablehnung mit Ausweichen, `versionNumber` nur im PUT-Response, Version im
+Header — sind gegen einen Mock mit Espo-Semantik verifiziert.
 
 **Erwartung für den nächsten Lauf:** Schritt 2 liefert HTTP 409; damit ist der
 Konfliktdialog aus PLAN.md Phase 5 realistisch auslösbar.
@@ -404,5 +414,7 @@ annehmen, dass jedes Layout-Feld beschreibbar ist.
   und muss `and, or, equals, has, in, isEmpty, isNotEmpty, isTrue, isFalse`
   beherrschen — `has` auf Array-Werten.
 - **Phase 5:** `versionNumber` kommt mit dem Datensatz und wandert als
-  `baseVersionNumber` in die Outbox. Konflikte sind nur bei echten
-  Wertänderungen zu erwarten (Server vergleicht feldbezogen).
+  `baseVersionNumber` in die Outbox; beim Push geht sie als Header
+  `X-Version-Number` raus (**nicht** im Payload — sonst keine Konfliktprüfung).
+  Konflikte sind nur bei echten Wertänderungen zu erwarten (Server vergleicht
+  feldbezogen).
