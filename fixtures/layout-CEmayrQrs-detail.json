@@ -1,0 +1,24 @@
+[
+  {
+    "rows": [
+      [
+        {
+          "name": "artnr"
+        },
+        {
+          "name": "title"
+        },
+        {
+          "name": "url"
+        }
+      ],
+      [
+        {
+          "name": "qrCode"
+        }
+      ]
+    ],
+    "style": "default",
+    "label": "Overview"
+  }
+]

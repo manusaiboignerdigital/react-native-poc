@@ -1,0 +1,29 @@
+[
+  {
+    "name": "name",
+    "width": 30,
+    "link": true,
+    "align": "left"
+  },
+  {
+    "name": "artnr",
+    "width": 10,
+    "align": "left"
+  },
+  {
+    "name": "title",
+    "width": 10,
+    "align": "left"
+  },
+  {
+    "name": "url",
+    "width": 40,
+    "align": "left"
+  },
+  {
+    "name": "korrekt",
+    "width": 10,
+    "align": "left",
+    "hidden": true
+  }
+]

@@ -1,0 +1,570 @@
+{
+  "CEmayrQrs": {
+    "fields": {
+      "qrCode": {
+        "visible": {
+          "conditionGroup": [
+            {
+              "type": "isNotEmpty",
+              "attribute": "id"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "__logicDefs": {
+    "EmailAccount": {
+      "fields": {
+        "smtpUsername": {
+          "required": {
+            "conditionGroup": [
+              {
+                "type": "and",
+                "value": [
+                  {
+                    "type": "isTrue",
+                    "attribute": "useSmtp"
+                  },
+                  {
+                    "type": "isTrue",
+                    "attribute": "smtpAuth"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "fetchSince": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "useImap"
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "isNotEmpty",
+                "attribute": "fetchData"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "useImap"
+              }
+            ]
+          }
+        },
+        "sentFolder": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "storeSentEmails"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "storeSentEmails"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "EmailFilter": {
+      "fields": {
+        "parent": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "attribute": "isGlobal",
+                "type": "isFalse"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "attribute": "isGlobal",
+                "type": "isFalse"
+              }
+            ]
+          }
+        },
+        "emailFolder": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "attribute": "action",
+                "type": "equals",
+                "value": "Move to Folder"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "attribute": "action",
+                "type": "equals",
+                "value": "Move to Folder"
+              }
+            ]
+          }
+        },
+        "groupEmailFolder": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "attribute": "action",
+                "type": "equals",
+                "value": "Move to Group Folder"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "attribute": "action",
+                "type": "equals",
+                "value": "Move to Group Folder"
+              }
+            ]
+          }
+        },
+        "markAsRead": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "attribute": "parentType",
+                "type": "equals",
+                "value": "User"
+              }
+            ]
+          }
+        },
+        "skipNotification": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "attribute": "parentType",
+                "type": "equals",
+                "value": "User"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "action": [
+          {
+            "conditionGroup": [
+              {
+                "attribute": "isGlobal",
+                "type": "isTrue"
+              }
+            ],
+            "optionList": [
+              "Skip"
+            ]
+          },
+          {
+            "conditionGroup": [
+              {
+                "attribute": "parentType",
+                "type": "equals",
+                "value": "User"
+              }
+            ],
+            "optionList": [
+              "Skip",
+              "Move to Folder",
+              "None"
+            ]
+          },
+          {
+            "conditionGroup": [
+              {
+                "attribute": "parentType",
+                "type": "equals",
+                "value": "InboundEmail"
+              }
+            ],
+            "optionList": [
+              "Skip",
+              "Move to Group Folder"
+            ]
+          },
+          {
+            "conditionGroup": [],
+            "optionList": [
+              "Skip"
+            ]
+          }
+        ]
+      }
+    },
+    "Preferences": {
+      "fields": {
+        "assignmentEmailNotificationsIgnoreEntityTypeList": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "receiveAssignmentEmailNotifications"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "Template": {
+      "fields": {
+        "entityType": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "isNotEmpty",
+                "attribute": "id"
+              }
+            ]
+          }
+        },
+        "footer": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "printFooter"
+              }
+            ]
+          }
+        },
+        "footerPosition": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "printFooter"
+              }
+            ]
+          }
+        },
+        "header": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "printHeader"
+              }
+            ]
+          }
+        },
+        "headerPosition": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isTrue",
+                "attribute": "printHeader"
+              }
+            ]
+          }
+        },
+        "body": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isNotEmpty",
+                "attribute": "entityType"
+              }
+            ]
+          }
+        },
+        "pageWidth": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "pageFormat",
+                "value": "Custom"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "pageFormat",
+                "value": "Custom"
+              }
+            ]
+          }
+        },
+        "pageHeight": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "pageFormat",
+                "value": "Custom"
+              }
+            ]
+          },
+          "required": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "pageFormat",
+                "value": "Custom"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "User": {
+      "fields": {
+        "avatarColor": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "avatarId",
+                "value": null,
+                "data": {
+                  "field": "avatar"
+                }
+              },
+              {
+                "type": "in",
+                "attribute": "type",
+                "value": [
+                  "regular",
+                  "admin",
+                  "api"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "authMethod": [
+          {
+            "optionList": [
+              "ApiKey",
+              "Hmac"
+            ],
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "type",
+                "value": "api"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "CPruefberichte": {
+      "fields": {
+        "sonstiges": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "or",
+                "value": [
+                  {
+                    "type": "has",
+                    "attribute": "ersatzteileDosiergeraete",
+                    "value": "Sonstiges"
+                  }
+                ]
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "ersatzteileAbfuellstation": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "ersatzteile",
+                "value": "ja"
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "ersatzteileDosiergeraete": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "ersatzteile",
+                "value": "ja"
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "ersatzteileSpraystation": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "ersatzteile",
+                "value": "ja"
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "sonstigesErsatzteileSpraystation": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "has",
+                "attribute": "ersatzteileSpraystation",
+                "value": "Sonstiges"
+              }
+            ]
+          },
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "cLieferschein": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "isEmpty",
+                "attribute": "cKundenbaustelleId",
+                "data": {
+                  "field": "cKundenbaustelle"
+                }
+              }
+            ]
+          }
+        },
+        "dosierung": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "anmerkungDosierung": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "anmerkungMaschine": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "maschine": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        },
+        "ersatzteile": {
+          "readOnly": {
+            "conditionGroup": [
+              {
+                "type": "equals",
+                "attribute": "status",
+                "value": "signed"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "CEmayrQrs": {
+      "fields": {
+        "qrCode": {
+          "visible": {
+            "conditionGroup": [
+              {
+                "type": "isNotEmpty",
+                "attribute": "id"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

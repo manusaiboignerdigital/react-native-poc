@@ -1,0 +1,72 @@
+Probe gegen http://emayr.local/api/v1 — 2026-07-26T21:12:55.404Z
+
+== A3: GET App/user ==
+  -> fixtures/app-user.json geschrieben
+  Top-Level-Keys: user, acl, preferences, token, settings, language, appParams
+  user.userName vorhanden: true
+  acl-Keys: table, fieldTable, assignmentPermission, messagePermission, mentionPermission, userCalendarPermission, auditPermission, exportPermission, massUpdatePermission, userPermission, portalPermission, groupEmailAccountPermission, followerManagementPermission, dataPrivacyPermission, fieldTableQuickAccess
+
+== A1/A8/A11: GET Metadata ==
+  -> fixtures/metadata.json geschrieben
+  Top-Level-Keys: aclDefs, app, clientDefs, dashlets, entityAcl, entityDefs, fields, integrations, logicDefs, notificationDefs, scopes, themes, streamDefs
+  Entitäten gesamt: 22
+  Custom-Entitäten (C-Präfix, Kandidaten für A11): CArtikel, CEmayrQrs, CEmayrTracks, CKundenbaustellen, CLieferscheine, CPruefberichte
+  Entitäten mit clientDefs.dynamicLogic (A8): CEmayrQrs
+  logicDefs vorhanden, Keys: EmailAccount, EmailFilter, Preferences, Template, User, CPruefberichte, CEmayrQrs
+  -> fixtures/dynamic-logic-examples.json geschrieben
+  Verwendete conditionGroup-Operatoren: and, equals, has, in, isEmpty, isFalse, isNotEmpty, isTrue, or
+  Feldtypen CPruefberichte: varchar(6), text(2), datetime(3), link(6), linkMultiple(1), date(3), enum(4), checklist(3), image(1), email(1), bool(2)
+  Feldtypen CEmayrQrs: varchar(4), text(1), datetime(3), link(3), linkMultiple(1), bool(1), barcode(1)
+  Feldtypen instanzweit: varchar(78), link(58), bool(51), datetime(39), enum(32), linkMultiple(23), text(17), int(16), jsonObject(11), float(10), linkParent(9), array(8), jsonArray(7), checklist(5), password(4), date(4), enumInt(4), wysiwyg(4), autoincrement(3), foreign(3), email(3), multiEnum(2), personName(2), phone(2), image(2), id(1), file(1), attachmentMultiple(1), base(1), colorpicker(1), url(1), address(1), map(1), barcode(1)
+
+== A2: GET I18n ==
+  -> fixtures/i18n.json geschrieben
+  Top-Level-Keys (Scopes): DashletOptions, EmailAccount, EmailFilter, Global, Integration, Note, Preferences, Stream, User, Calendar, CLieferscheine, CPruefberichte, ActionHistoryRecord, Attachment, Currency ...
+  CPruefberichte.options-Felder: dosierung, maschine, ersatzteile, ersatzteileDosiergeraete, ersatzteileSpraystation, ersatzteileAbfuellstation, status
+  CEmayrQrs.options: nicht vorhanden
+
+== A4: Layout-Pfad ermitteln ==
+  OK: GET api/v1/CPruefberichte/layout/detail (HTTP 200)
+  -> fixtures/layout-CPruefberichte-detail.json geschrieben
+  OK: GET api/v1/CPruefberichte/layout/list (HTTP 200)
+  -> fixtures/layout-CPruefberichte-list.json geschrieben
+  OK: GET api/v1/CEmayrQrs/layout/detail (HTTP 200)
+  -> fixtures/layout-CEmayrQrs-detail.json geschrieben
+  OK: GET api/v1/CEmayrQrs/layout/list (HTTP 200)
+  -> fixtures/layout-CEmayrQrs-list.json geschrieben
+  ERGEBNIS A4: Layout-Pfad = api/v1/{Entity}/layout/{name}
+
+== A5/A6/A7: Listen, Pagination, where auf modifiedAt ==
+  CPruefberichte: total=10001
+  CEmayrQrs: total=1
+  Testentität: CPruefberichte (10001 Datensätze)
+  GET CPruefberichte maxSize=5: total=10001, geliefert=5
+  -> fixtures/list-CPruefberichte.json geschrieben
+  A7: assignedUserId=true assignedUserName=true teamsIds=true teamsNames=true
+  maxSize=200 -> HTTP 200, geliefert=200
+  maxSize=500 -> HTTP 200, geliefert=500
+  maxSize=1000 -> HTTP 200, geliefert=1000
+  maxSize=5000 -> HTTP 200, geliefert=5000
+  ERGEBNIS A5: höchstes akzeptiertes maxSize = 5000
+  A6 OK: where[type=after][attribute=modifiedAt][value=2026-06-26 21:12:58] -> total=1
+  -> fixtures/list-CPruefberichte-delta.json geschrieben
+
+== A9: Optimistic Concurrency (versionNumber) ==
+  Metadata entityDefs.CPruefberichte.optimisticConcurrencyControl = true
+  -> fixtures/record-CPruefberichte.json geschrieben
+  versionNumber im GET-Response vorhanden: true (Wert: 26)
+  Kandidatenfelder: maschine, description, bemerkungen, sonstiges, sonstigesErsatzteileSpraystation, anmerkungDosierung, anmerkungMaschine, dosierung, ersatzteile, ersatzteileDosiergeraete, ersatzteileSpraystation, ersatzteileAbfuellstation
+  Testfeld: maschine (Typ enum, Ausgangswert "fehlerhaft")
+  HINWEIS: Sollte der Lauf abbrechen, diesen Ausgangswert manuell zurückschreiben.
+  [1] PUT maschine="in ordnung" mit X-Version-Number=26 -> HTTP 200
+      versionNumber im PUT-Response: 27
+  [2] PUT maschine="nicht geprüft" (abweichend) mit veraltetem X-Version-Number=26 -> HTTP 409
+  ERGEBNIS A9: Optimistic Concurrency AKTIV — Konflikt wird als HTTP 409 gemeldet (Phase 5 kann darauf bauen).
+  [3] Aufräumen: maschine auf "fehlerhaft" zurück -> HTTP 200
+
+== A10: CORS von http://localhost:5173 ==
+  OPTIONS Preflight -> HTTP 200, Access-Control-Allow-Origin: (fehlt)
+  ERGEBNIS A10: CORS blockiert. Dev: Vite-Proxy (/api -> Instanz). Prod: gleiche Domain/Reverse-Proxy.
+
+== Zusammenfassung ==
+Alle Probes durchgelaufen.

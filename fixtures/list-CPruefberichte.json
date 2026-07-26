@@ -1,0 +1,55 @@
+{
+  "total": 10001,
+  "list": [
+    {
+      "id": "1",
+      "name": "   (,  ) - LS: ",
+      "modifiedAt": "2026-07-26 21:06:14",
+      "createdById": "662ff134b94ff5b21",
+      "assignedUserId": null,
+      "assignedUserName": null,
+      "teamsIds": [],
+      "teamsNames": {}
+    },
+    {
+      "id": "9999",
+      "name": "value1",
+      "modifiedAt": null,
+      "createdById": null,
+      "assignedUserId": null,
+      "assignedUserName": null,
+      "teamsIds": [],
+      "teamsNames": {}
+    },
+    {
+      "id": "9998",
+      "name": "value1",
+      "modifiedAt": null,
+      "createdById": null,
+      "assignedUserId": null,
+      "assignedUserName": null,
+      "teamsIds": [],
+      "teamsNames": {}
+    },
+    {
+      "id": "9997",
+      "name": "value1",
+      "modifiedAt": null,
+      "createdById": null,
+      "assignedUserId": null,
+      "assignedUserName": null,
+      "teamsIds": [],
+      "teamsNames": {}
+    },
+    {
+      "id": "9996",
+      "name": "value1",
+      "modifiedAt": null,
+      "createdById": null,
+      "assignedUserId": null,
+      "assignedUserName": null,
+      "teamsIds": [],
+      "teamsNames": {}
+    }
+  ]
+}
