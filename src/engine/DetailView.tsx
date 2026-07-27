@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import { rendererFor, type FieldSpec } from './fieldRegistry';
+import { resolveFieldLogic } from './dynamicLogic';
 import type { Meta, RecordData } from './meta';
 
 /**
  * Rendert einen Datensatz anhand des `detail`-Layouts: Panels → rows → cells.
  * Enthält keine Feldnamen — welche Felder erscheinen, entscheidet allein das
- * Layout aus dem Cache.
+ * Layout aus dem Cache und die Dynamic Logic.
  */
 export function DetailView({
   entityType,
@@ -15,6 +17,13 @@ export function DetailView({
   record: RecordData;
   meta: Meta;
 }) {
+  // Sichtbarkeitsregeln gelten auch hier: was im Formular ausgeblendet wäre,
+  // ist auch in der Ansicht nicht relevant.
+  const logic = useMemo(
+    () => resolveFieldLogic(meta.fieldLogic(entityType), record),
+    [entityType, meta, record],
+  );
+
   return (
     <>
       {meta.detailLayout(entityType).map((panel, panelIndex) => (
@@ -25,6 +34,7 @@ export function DetailView({
               row.map((cell, cellIndex) => {
                 // Leere Zellen sind im Layout als `false` kodiert.
                 if (!cell) return <div key={`${rowIndex}-${cellIndex}`} className="field spacer" />;
+                if (logic[cell.name]?.visible === false) return null;
 
                 const def = meta.fieldDef(entityType, cell.name);
                 const spec: FieldSpec = {

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { rendererFor, type FieldSpec } from './fieldRegistry';
+import { resolveFieldLogic } from './dynamicLogic';
 import type { Meta, RecordData } from './meta';
 
 /**
@@ -40,12 +41,30 @@ export function EditView({
     [entityType, meta],
   );
 
-  const specFor = (name: string): FieldSpec => ({
-    entityType,
-    name,
-    def: meta.fieldDef(entityType, name) ?? { type: 'unknown' },
-    label: meta.fieldLabel(entityType, name),
-  });
+  // Dynamic Logic gegen den *aktuellen Entwurf* — dadurch wirkt jede
+  // Feldänderung sofort auf Sichtbarkeit, Pflicht und Sperre der anderen Felder.
+  const logic = useMemo(
+    () => resolveFieldLogic(meta.fieldLogic(entityType), draft),
+    [entityType, meta, draft],
+  );
+
+  const specFor = (name: string): FieldSpec => {
+    const def = meta.fieldDef(entityType, name) ?? { type: 'unknown' };
+    const dynamic = logic[name];
+    return {
+      entityType,
+      name,
+      // Dynamisch gefordert oder statisch pflichtig — beides zählt.
+      def: dynamic ? { ...def, required: def.required || dynamic.required } : def,
+      label: meta.fieldLabel(entityType, name),
+    };
+  };
+
+  const isVisible = (name: string) => logic[name]?.visible !== false;
+  const isLocked = (name: string) => {
+    const def = meta.fieldDef(entityType, name);
+    return Boolean(def?.readOnly || def?.notStorable || logic[name]?.readOnly);
+  };
 
   function applyPatch(patch: RecordData) {
     setDraft((current) => ({ ...current, ...patch }));
@@ -54,8 +73,10 @@ export function EditView({
   function validateAll(): Record<string, string> {
     const found: Record<string, string> = {};
     for (const cell of cells) {
+      // Ausgeblendete oder gesperrte Felder werden nicht geprüft — sonst
+      // blockierte ein unsichtbares Pflichtfeld das Speichern unauflösbar.
+      if (!isVisible(cell.name) || isLocked(cell.name)) continue;
       const spec = specFor(cell.name);
-      if (spec.def.readOnly || spec.def.notStorable) continue;
       const error = rendererFor(spec.def.type).validate?.(spec, draft);
       if (error) found[cell.name] = error;
     }
@@ -90,10 +111,12 @@ export function EditView({
             {panel.rows.flatMap((row, rowIndex) =>
               row.map((cell, cellIndex) => {
                 if (!cell) return <div key={`${rowIndex}-${cellIndex}`} className="field spacer" />;
+                // Von der Dynamic Logic ausgeblendet
+                if (!isVisible(cell.name)) return null;
 
                 const spec = specFor(cell.name);
                 const renderer = rendererFor(spec.def.type);
-                const locked = Boolean(spec.def.readOnly || spec.def.notStorable);
+                const locked = isLocked(cell.name);
                 const error = errors[cell.name];
 
                 return (

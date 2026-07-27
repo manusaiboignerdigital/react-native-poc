@@ -29,6 +29,7 @@ laden — die App startet vollständig aus dem lokalen Cache.
 | `npm run build` | Typecheck + Produktions-Build |
 | `npm run preview` | Build lokal servieren (inkl. Proxy) |
 | `npm run typecheck` | nur TypeScript |
+| `npm test` | Unit-Tests (Vitest) |
 | `npm run probe` | Phase-0-Probe gegen die Instanz |
 
 ### Architektur
@@ -44,6 +45,7 @@ src/engine/fieldRegistry.tsx  fieldType -> Detail/Edit/validate + Fallback
 src/engine/DetailView.tsx   rendert aus dem detail-Layout
 src/engine/EditView.tsx     Formular aus demselben Layout, mit Validierung
 src/engine/ListView.tsx     Tabelle aus dem list-Layout
+src/engine/dynamicLogic.ts  conditionGroup-Evaluator (+ .test.ts)
 src/sync/pull.ts            Replikation (Phase 2: erste Seite, Ausbau in Phase 4)
 src/pages/                  Setup, Übersicht, Liste, Detail/Bearbeiten
 public/sw.js                Minimaler Service Worker für die App-Shell
@@ -65,6 +67,28 @@ zerlegen. Fehlt ein Layout ganz, wird es aus `entityDefs` abgeleitet.
 damit die Auswahl offline genauso funktioniert wie online. `linkMultiple`
 bleibt lesend (Nicht-Ziel laut PLAN.md).
 
+### Dynamic Logic (Phase 3)
+
+`engine/dynamicLogic.ts` wertet Espos `conditionGroup` aus — Quelle ist
+**`logicDefs`** (siehe API-NOTES A8), `clientDefs.dynamicLogic` wird darunter
+gemischt. Unterstützt: `and, or, not` sowie `isEmpty, isNotEmpty, isTrue,
+isFalse, equals, notEquals, greaterThan, lessThan, greaterThanOrEquals,
+lessThanOrEquals, in, notIn, contains, has`. Unbekannte Operatoren werden
+gemeldet und als `true` gewertet — ein Feld zu zeigen ist harmloser, als es
+fälschlich zu verstecken.
+
+Der `EditView` wertet die Regeln bei **jeder Feldänderung** gegen den aktuellen
+Entwurf neu aus (`visible`, `required`, `readOnly`); der `DetailView` wendet die
+Sichtbarkeit ebenfalls an. Ausgeblendete und gesperrte Felder werden von der
+Validierung übersprungen, damit ein unsichtbares Pflichtfeld das Speichern nicht
+unauflösbar blockiert.
+
+Unit-Tests laufen gegen die echten Bedingungen der Instanz:
+
+```bash
+npm test
+```
+
 ## Phase 0 — Annahmen verifizieren
 
 Kein Anwendungscode; nur Probe-Skript + Dokumentation.
@@ -85,7 +109,7 @@ zeigen (non-destructive: schreibt bestehende Werte unverändert zurück).
 
 `.env` ist gitignored — Zugangsdaten niemals committen.
 
-**Stand: Phasen 0–2 umgesetzt.** Alle Annahmen A3–A11 sind gegen
+**Stand: Phasen 0–3 umgesetzt.** Alle Annahmen A3–A11 sind gegen
 `http://emayr.local` verifiziert, die Fixtures liegen im Repo, die Befunde
 stehen in [`docs/API-NOTES.md`](docs/API-NOTES.md). Wesentliche Abweichungen
 von PLAN.md:

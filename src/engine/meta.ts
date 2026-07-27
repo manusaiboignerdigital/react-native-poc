@@ -1,5 +1,6 @@
 import type { BootData } from '../boot';
 import type { FieldDef } from '../api/espoClient';
+import type { EntityLogicDefs } from './dynamicLogic';
 
 /**
  * Zugriff auf Metadaten, Layouts und Übersetzungen — die einzige Stelle, die
@@ -93,6 +94,26 @@ export class Meta {
       | Record<string, { entity?: string }>
       | undefined;
     return links?.[field]?.entity;
+  }
+
+  /**
+   * Dynamic-Logic-Definitionen einer Entität.
+   *
+   * Maßgeblich ist `logicDefs` (dort liegen auf dieser Instanz alle 11 Felder
+   * von CPruefberichte); `clientDefs.{Entity}.dynamicLogic` wird als zweite,
+   * ältere Quelle darunter gemischt. Bei Überschneidung gewinnt `logicDefs`.
+   */
+  fieldLogic(entityType: string): EntityLogicDefs {
+    const fromClientDefs = (
+      this.boot.metadata.clientDefs?.[entityType]?.dynamicLogic as
+        | { fields?: EntityLogicDefs }
+        | undefined
+    )?.fields;
+    const fromLogicDefs = (
+      this.boot.metadata.logicDefs?.[entityType] as { fields?: EntityLogicDefs } | undefined
+    )?.fields;
+
+    return { ...fromClientDefs, ...fromLogicDefs };
   }
 
   private layout(entityType: string, name: 'detail' | 'list'): unknown {
