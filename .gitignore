@@ -11,3 +11,6 @@ fixtures/raw/
 
 # by TB
 .idea
+
+# TypeScript-Buildinfo
+*.tsbuildinfo

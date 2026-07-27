@@ -431,12 +431,16 @@ drei Dinge für Phase 4:
 1. **Delta-Pull sieht sie nicht.** `where[after][modifiedAt]` filtert `NULL`
    weg — nach dem Initial-Pull erscheinen sie in keinem Delta mehr. Für den
    Volumentest egal, für einen realistischen Delta-Test nicht.
-2. **`orderBy=modifiedAt` taugt hier nicht zur Paginierung.** Bei 10.000
-   identischen (`NULL`) Sortierschlüsseln ist die Reihenfolge zwischen zwei
+2. **`orderBy=modifiedAt` ist als Paginierschlüssel nicht eindeutig.** Bei
+   10.000 identischen (`NULL`) Sortierwerten ist die Reihenfolge zwischen zwei
    Requests nicht garantiert — Datensätze können über Seitengrenzen hinweg
-   doppelt erscheinen oder ausfallen. **Empfehlung: Initial-Pull über
-   `orderBy=id&order=asc`** (eindeutig, damit stabil); `modifiedAt` bleibt für
-   den *Delta*-Pull maßgeblich. Das ist eine Abweichung von PLAN.md Phase 4,1.
+   doppelt erscheinen oder ausfallen.
+   **Entscheidung: `orderBy=modifiedAt` bleibt wie in PLAN.md** (Projektvorgabe).
+   Das Risiko wird stattdessen in Phase 4 abgefedert: Upserts sind idempotent
+   (Duplikate schaden nicht), und nach dem Initial-Pull wird die lokale Anzahl
+   gegen `total` geprüft — weicht sie ab, wird die betroffene Seite erneut
+   geholt. Ein eindeutiger Sortierschlüssel (`id`) bliebe die robustere
+   Variante, falls die Abweichung in der Praxis auftritt.
 3. **Der Volumentest bleibt gültig**, die Renderer-Tests brauchen aber weiter
    den einen echten Datensatz (id `1`) — die Seed-Datensätze haben außer `name`
    keine Feldwerte.
@@ -463,8 +467,9 @@ echten Datensatz demonstriert.
 - **Phase 3:** Evaluator liest `logicDefs` (nicht nur `clientDefs.dynamicLogic`)
   und muss `and, or, equals, has, in, isEmpty, isNotEmpty, isTrue, isFalse`
   beherrschen — `has` auf Array-Werten.
-- **Phase 4:** Initial-Pull `orderBy=id&order=asc` mit `maxSize=500`;
-  Delta-Pull über `modifiedAt` (siehe „Datenlage").
+- **Phase 4:** Initial-Pull `orderBy=modifiedAt&order=asc` mit `maxSize=500`,
+  idempotente Upserts und Abgleich der lokalen Anzahl gegen `total`
+  (siehe „Datenlage").
 - **Phase 5:** `versionNumber` kommt mit dem Datensatz und wandert als
   `baseVersionNumber` in die Outbox; beim Push geht sie als Header
   `X-Version-Number` raus (**nicht** im Payload — sonst keine Konfliktprüfung).

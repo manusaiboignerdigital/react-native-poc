@@ -1,0 +1,216 @@
+:root {
+  --bg: #f5f6f8;
+  --card: #fff;
+  --border: #d8dbe0;
+  --text: #1c1f23;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --danger: #b91c1c;
+  --ok: #15803d;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.badge.online {
+  color: var(--ok);
+  border-color: currentColor;
+}
+
+.badge.offline {
+  color: var(--danger);
+  border-color: currentColor;
+}
+
+main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+h1,
+h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+h1 {
+  font-size: 1.4rem;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+}
+
+dt {
+  color: var(--muted);
+}
+
+dd {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 26rem;
+}
+
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: grid;
+  gap: 0.5rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+label.radio {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+input {
+  font: inherit;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+input[type="radio"] {
+  width: auto;
+}
+
+button {
+  font: inherit;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.center {
+  text-align: center;
+  padding: 2rem;
+}
+
+.setup {
+  max-width: 32rem;
+}
+
+.keys {
+  margin: 0;
+  padding-left: 1.1rem;
+  columns: 2;
+  font-size: 0.85rem;
+}
+
+code {
+  font-size: 0.85em;
+  background: #eef0f3;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
