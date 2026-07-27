@@ -3,42 +3,33 @@ import { useApp } from '../store';
 import { Meta } from '../engine/meta';
 import { ListView } from '../engine/ListView';
 import { countRecords, listRecords } from '../db/repo';
-import { pullFirstPage } from '../sync/pull';
+
+/** Obergrenze der angezeigten Datensätze — die Instanz hält über 10.000. */
+const DISPLAY_LIMIT = 500;
 
 export function ListPage({ entityType }: { entityType: string }) {
   const data = useApp((s) => s.data)!;
-  const config = useApp((s) => s.config)!;
   const navigate = useApp((s) => s.navigate);
   const online = useApp((s) => s.online);
+  const syncing = useApp((s) => s.syncing);
+  const progress = useApp((s) => s.progress);
+  const dataVersion = useApp((s) => s.dataVersion);
+  const replicate = useApp((s) => s.replicate);
 
   const meta = useMemo(() => new Meta(data), [data]);
   const [records, setRecords] = useState<Record<string, unknown>[]>([]);
-  const [total, setTotal] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
 
   const load = useCallback(async () => {
-    const rows = await listRecords(entityType, 200);
+    const rows = await listRecords(entityType, DISPLAY_LIMIT);
     setRecords(rows.map((row) => row.data));
     setTotal(await countRecords(entityType));
   }, [entityType]);
 
+  // Nach jeder Replikation neu laden.
   useEffect(() => {
     void load();
-  }, [load]);
-
-  async function fetchFromServer() {
-    setLoading(true);
-    setError(null);
-    try {
-      await pullFirstPage(config, entityType);
-      await load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [load, dataVersion]);
 
   return (
     <main>
@@ -54,14 +45,23 @@ export function ListPage({ entityType }: { entityType: string }) {
         <div className="card-head">
           <h2>
             {meta.entityLabel(entityType)}{' '}
-            <span className="muted">({total ?? 0} lokal)</span>
+            <span className="muted">
+              ({total} lokal
+              {total > DISPLAY_LIMIT && `, ${DISPLAY_LIMIT} angezeigt`})
+            </span>
           </h2>
-          <button onClick={() => void fetchFromServer()} disabled={loading || !online}>
-            {loading ? 'Lade …' : 'Datensätze laden'}
+          <button onClick={() => void replicate(entityType)} disabled={syncing || !online}>
+            {syncing ? 'Repliziere …' : 'Alle Datensätze laden'}
           </button>
         </div>
+
         {!online && <p className="muted">Offline — es wird der lokale Bestand angezeigt.</p>}
-        {error && <p className="error">{error}</p>}
+        {progress?.entityType === entityType && (
+          <p className="muted">
+            {progress.loaded} von {progress.total}
+            <progress value={progress.loaded} max={progress.total || 1} />
+          </p>
+        )}
 
         <ListView
           entityType={entityType}

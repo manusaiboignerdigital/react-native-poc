@@ -46,7 +46,7 @@ src/engine/DetailView.tsx   rendert aus dem detail-Layout
 src/engine/EditView.tsx     Formular aus demselben Layout, mit Validierung
 src/engine/ListView.tsx     Tabelle aus dem list-Layout
 src/engine/dynamicLogic.ts  conditionGroup-Evaluator (+ .test.ts)
-src/sync/pull.ts            Replikation (Phase 2: erste Seite, Ausbau in Phase 4)
+src/sync/pull.ts            Initial- und Delta-Replikation (+ .test.ts)
 src/pages/                  Setup, Übersicht, Liste, Detail/Bearbeiten
 public/sw.js                Minimaler Service Worker für die App-Shell
 ```
@@ -89,6 +89,33 @@ Unit-Tests laufen gegen die echten Bedingungen der Instanz:
 npm test
 ```
 
+### Replikation (Phase 4)
+
+`sync/pull.ts` holt Datensätze in den lokalen Bestand:
+
+- **Erstreplikation** (`initialPull`) — seitenweise mit `maxSize=500`,
+  `orderBy=modifiedAt&order=asc`. Das `select` wird aus den Layouts gebaut:
+  alle dort verwendeten Felder plus `{link}Id`/`{link}Name` bzw.
+  `{link}Ids`/`{link}Names`. Nach dem Lauf wird der lokale Bestand gegen
+  `total` geprüft und eine Abweichung in der Oberfläche markiert.
+- **Delta** (`deltaPull`) — `where[0][type]=after` auf `modifiedAt`, mit
+  **2 Minuten Überlappung** gegen Uhrendrift; doppelt geholte Datensätze sind
+  unkritisch, weil Upserts idempotent sind. Der Zeiger rückt nur vorwärts.
+  Ohne vorherige Erstreplikation wird bewusst nichts geholt — sonst entstünde
+  eine Lücke, die später nicht mehr auffällt.
+- Ein Delta läuft automatisch beim App-Start und beim `online`-Event, dazu
+  manuell über *Jetzt synchronisieren*.
+
+`versionNumber` wird für die Konfliktprüfung (Phase 5) mit angefordert. Lehnt
+die Instanz das ab (HTTP 400), wiederholt der Client den Request einmalig ohne
+das Attribut und merkt sich das für die Folgeseiten.
+
+**Bekannte Lücke — bewusst nicht gebaut:** Löschungen und ACL-Entzug sind über
+einen Delta-Abgleich unsichtbar. Ein gelöschter Datensatz taucht in keiner
+Liste mehr auf, bleibt lokal aber liegen. Lösungswege für später: periodischer
+ID-Abgleich (nur IDs paginiert ziehen und lokal diffen) oder ein
+serverseitiger Custom-Endpoint bzw. Webhooks.
+
 ## Phase 0 — Annahmen verifizieren
 
 Kein Anwendungscode; nur Probe-Skript + Dokumentation.
@@ -109,7 +136,7 @@ zeigen (non-destructive: schreibt bestehende Werte unverändert zurück).
 
 `.env` ist gitignored — Zugangsdaten niemals committen.
 
-**Stand: Phasen 0–3 umgesetzt.** Alle Annahmen A3–A11 sind gegen
+**Stand: Phasen 0–4 umgesetzt.** Alle Annahmen A3–A11 sind gegen
 `http://emayr.local` verifiziert, die Fixtures liegen im Repo, die Befunde
 stehen in [`docs/API-NOTES.md`](docs/API-NOTES.md). Wesentliche Abweichungen
 von PLAN.md:

@@ -19,7 +19,11 @@ export function App() {
   }, [init]);
 
   useEffect(() => {
-    const goOnline = () => setOnline(true);
+    const goOnline = () => {
+      setOnline(true);
+      // Beim Wiederverbinden nachziehen (PLAN.md Phase 4,3).
+      void useApp.getState().syncNow();
+    };
     const goOffline = () => setOnline(false);
     window.addEventListener('online', goOnline);
     window.addEventListener('offline', goOffline);

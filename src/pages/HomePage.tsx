@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '../store';
 import { countRecords, metaKeys } from '../db/repo';
+import { db } from '../db/schema';
+import type { SyncStateRow } from '../db/schema';
 import type { BootData } from '../boot';
 
 /** Label einer Entität aus der I18n, sonst der technische Name. */
@@ -14,14 +16,26 @@ function fieldCount(data: BootData, entityType: string): number {
   return Object.keys(data.metadata.entityDefs?.[entityType]?.fields ?? {}).length;
 }
 
+const formatTime = (value: string | null) =>
+  value ? new Date(value).toLocaleString('de-DE') : '—';
+
 export function HomePage() {
   const data = useApp((s) => s.data)!;
   const refresh = useApp((s) => s.refresh);
   const logout = useApp((s) => s.logout);
   const status = useApp((s) => s.status);
   const navigate = useApp((s) => s.navigate);
+  const online = useApp((s) => s.online);
+  const syncing = useApp((s) => s.syncing);
+  const progress = useApp((s) => s.progress);
+  const lastSync = useApp((s) => s.lastSync);
+  const syncError = useApp((s) => s.syncError);
+  const dataVersion = useApp((s) => s.dataVersion);
+  const replicate = useApp((s) => s.replicate);
+  const syncNow = useApp((s) => s.syncNow);
 
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [syncState, setSyncState] = useState<Record<string, SyncStateRow>>({});
   const [cachedKeys, setCachedKeys] = useState<string[]>([]);
 
   useEffect(() => {
@@ -30,9 +44,10 @@ export function HomePage() {
         data.scopeEntities.map(async (e) => [e, await countRecords(e)] as const),
       );
       setCounts(Object.fromEntries(entries));
+      setSyncState(Object.fromEntries((await db.syncState.toArray()).map((s) => [s.entityType, s])));
       setCachedKeys(await metaKeys());
     })();
-  }, [data]);
+  }, [data, dataVersion, syncing]);
 
   const user = data.appUser.user;
 
@@ -64,14 +79,43 @@ export function HomePage() {
       </section>
 
       <section className="card">
-        <h2>Entitäten</h2>
+        <div className="card-head">
+          <h2>Replikation</h2>
+          <button onClick={() => void syncNow()} disabled={syncing || !online}>
+            {syncing ? 'Synchronisiere …' : 'Jetzt synchronisieren'}
+          </button>
+        </div>
+
+        {!online && <p className="muted">Offline — Synchronisieren ist nicht möglich.</p>}
+        {progress && (
+          <p className="muted">
+            {progress.phase === 'initial' ? 'Erstreplikation' : 'Delta'} {progress.entityType}:{' '}
+            {progress.loaded} von {progress.total}
+            <progress value={progress.loaded} max={progress.total || 1} />
+          </p>
+        )}
+        {syncError && <p className="error">{syncError}</p>}
+        {lastSync && !syncing && (
+          <p className="muted">
+            {lastSync
+              .map((r) =>
+                r.skipped
+                  ? `${r.entityType}: noch nicht repliziert`
+                  : `${r.entityType}: ${r.loaded} übertragen${r.mismatch ? ' ⚠︎ Anzahl weicht ab' : ''}`,
+              )
+              .join(' · ')}
+          </p>
+        )}
+
         <table>
           <thead>
             <tr>
               <th>Entität</th>
               <th>Felder</th>
               <th>Layouts</th>
-              <th>Datensätze lokal</th>
+              <th>Lokal</th>
+              <th>Letzter Sync</th>
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -79,6 +123,7 @@ export function HomePage() {
               const layouts = ['detail', 'list'].filter(
                 (n) => data.layouts[`layout:${entityType}:${n}`] !== undefined,
               );
+              const state = syncState[entityType];
               return (
                 <tr key={entityType}>
                   <td>
@@ -95,13 +140,33 @@ export function HomePage() {
                   <td>{fieldCount(data, entityType)}</td>
                   <td>{layouts.length ? layouts.join(', ') : <em>keine</em>}</td>
                   <td>{counts[entityType] ?? 0}</td>
+                  <td className="small">
+                    {formatTime(state?.lastSyncAt ?? null)}
+                    {state?.lastSyncedModifiedAt && (
+                      <>
+                        <br />
+                        <span className="muted">bis {state.lastSyncedModifiedAt}</span>
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      className="secondary"
+                      onClick={() => void replicate(entityType)}
+                      disabled={syncing || !online}
+                    >
+                      {state ? 'Neu replizieren' : 'Erstreplikation'}
+                    </button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        <p className="muted">
-          Datensätze werden ab Phase 4 repliziert — hier zählt der lokale Bestand.
+
+        <p className="hint">
+          Bekannte Lücke: Löschungen und ACL-Entzug sind über den Delta-Abgleich nicht
+          sichtbar — betroffene Datensätze bleiben lokal bestehen.
         </p>
       </section>
 

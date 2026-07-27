@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { boot, type BootData } from './boot';
 import { loadConfig, saveConfig, wipeLocalData, type AppConfig } from './db/repo';
+import { Meta } from './engine/meta';
+import { initialPull, syncAll, type PullProgress, type PullResult } from './sync/pull';
 
 type Status = 'starting' | 'setup' | 'booting' | 'ready' | 'error';
 
@@ -19,12 +21,23 @@ interface AppState {
   online: boolean;
   view: View;
 
+  /** Läuft gerade eine Replikation? Fortschritt für die Anzeige. */
+  syncing: boolean;
+  progress: PullProgress | null;
+  lastSync: PullResult[] | null;
+  syncError: string | null;
+  /** Zähler, der bei jeder abgeschlossenen Replikation steigt — Seiten laden neu. */
+  dataVersion: number;
+
   init: () => Promise<void>;
   connect: (config: AppConfig) => Promise<void>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
   setOnline: (online: boolean) => void;
   navigate: (view: View) => void;
+
+  replicate: (entityType: string) => Promise<void>;
+  syncNow: () => Promise<void>;
 }
 
 export const useApp = create<AppState>((set, get) => ({
@@ -34,6 +47,11 @@ export const useApp = create<AppState>((set, get) => ({
   error: null,
   online: navigator.onLine,
   view: { name: 'home' },
+  syncing: false,
+  progress: null,
+  lastSync: null,
+  syncError: null,
+  dataVersion: 0,
 
   /** Beim App-Start: gespeicherte Konfiguration suchen und booten. */
   async init() {
@@ -45,6 +63,9 @@ export const useApp = create<AppState>((set, get) => ({
     set({ config, status: 'booting', error: null });
     try {
       set({ data: await boot(config), status: 'ready' });
+      // Automatischer Delta-Pull beim App-Start (PLAN.md Phase 4,3). Entitäten
+      // ohne Erstreplikation werden dabei übersprungen.
+      void get().syncNow();
     } catch (err) {
       set({ status: 'error', error: err instanceof Error ? err.message : String(err) });
     }
@@ -85,5 +106,41 @@ export const useApp = create<AppState>((set, get) => ({
 
   navigate(view) {
     set({ view });
+  },
+
+  /** Erstreplikation einer Entität (vollständig paginiert). */
+  async replicate(entityType) {
+    const { config, data } = get();
+    if (!config || !data || get().syncing) return;
+
+    set({ syncing: true, syncError: null, progress: null });
+    try {
+      const result = await initialPull(config, new Meta(data), entityType, (progress) =>
+        set({ progress }),
+      );
+      set((s) => ({ lastSync: [result], dataVersion: s.dataVersion + 1 }));
+    } catch (err) {
+      set({ syncError: err instanceof Error ? err.message : String(err) });
+    } finally {
+      set({ syncing: false, progress: null });
+    }
+  },
+
+  /** Delta für alle bereits replizierten Entitäten. */
+  async syncNow() {
+    const { config, data, online } = get();
+    if (!config || !data || !online || get().syncing) return;
+
+    set({ syncing: true, syncError: null, progress: null });
+    try {
+      const results = await syncAll(config, new Meta(data), data.scopeEntities, (progress) =>
+        set({ progress }),
+      );
+      set((s) => ({ lastSync: results, dataVersion: s.dataVersion + 1 }));
+    } catch (err) {
+      set({ syncError: err instanceof Error ? err.message : String(err) });
+    } finally {
+      set({ syncing: false, progress: null });
+    }
   },
 }));
