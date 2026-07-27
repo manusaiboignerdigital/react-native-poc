@@ -34,14 +34,36 @@ laden — die App startet vollständig aus dem lokalen Cache.
 ### Architektur
 
 ```
-src/api/espoClient.ts   fetch-Wrapper, Auth, Fehlerklassen, X-Version-Number
-src/db/schema.ts        Dexie-Stores (meta, records, outbox, idMap, syncState)
-src/db/repo.ts          Zugriffsschicht (einziger Ort mit Dexie-Kontakt)
-src/boot.ts             Boot-Sequenz online/offline
-src/store.ts            App-Zustand (Zustand)
-src/pages/              Setup- und Startbildschirm
-public/sw.js            Minimaler Service Worker für die App-Shell
+src/api/espoClient.ts       fetch-Wrapper, Auth, Fehlerklassen, X-Version-Number
+src/db/schema.ts            Dexie-Stores (meta, records, outbox, idMap, syncState)
+src/db/repo.ts              Zugriffsschicht (einziger Ort mit Dexie-Kontakt)
+src/boot.ts                 Boot-Sequenz online/offline
+src/store.ts                App-Zustand und Routing
+src/engine/meta.ts          Metadaten, Layouts, Labels, Optionen
+src/engine/fieldRegistry.tsx  fieldType -> Detail/Edit/validate + Fallback
+src/engine/DetailView.tsx   rendert aus dem detail-Layout
+src/engine/EditView.tsx     Formular aus demselben Layout, mit Validierung
+src/engine/ListView.tsx     Tabelle aus dem list-Layout
+src/sync/pull.ts            Replikation (Phase 2: erste Seite, Ausbau in Phase 4)
+src/pages/                  Setup, Übersicht, Liste, Detail/Bearbeiten
+public/sw.js                Minimaler Service Worker für die App-Shell
 ```
+
+### Rendering-Engine (Phase 2)
+
+Kein View kennt einen Feldnamen — Felder, Reihenfolge und Spalten stammen
+ausschließlich aus den gecachten Layouts, Typen und Pflichtangaben aus
+`entityDefs`, Beschriftungen aus der I18n.
+
+Abgedeckte Feldtypen: `varchar, text, barcode, enum, multiEnum, checklist,
+array, bool, int, float, currency, date, datetime, email, phone, url, link,
+linkMultiple`. Alles andere — auf dieser Instanz `image` — landet im
+**Fallback-Renderer**, der Rohwert und Typ anzeigt, statt die Ansicht zu
+zerlegen. Fehlt ein Layout ganz, wird es aus `entityDefs` abgeleitet.
+
+`link`-Felder werden im Edit-Modus **aus dem lokalen Bestand** ausgewählt,
+damit die Auswahl offline genauso funktioniert wie online. `linkMultiple`
+bleibt lesend (Nicht-Ziel laut PLAN.md).
 
 ## Phase 0 — Annahmen verifizieren
 
@@ -63,7 +85,7 @@ zeigen (non-destructive: schreibt bestehende Werte unverändert zurück).
 
 `.env` ist gitignored — Zugangsdaten niemals committen.
 
-**Stand: Phase 0 abgeschlossen, Phase 1 umgesetzt.** Alle Annahmen A3–A11 sind gegen
+**Stand: Phasen 0–2 umgesetzt.** Alle Annahmen A3–A11 sind gegen
 `http://emayr.local` verifiziert, die Fixtures liegen im Repo, die Befunde
 stehen in [`docs/API-NOTES.md`](docs/API-NOTES.md). Wesentliche Abweichungen
 von PLAN.md:

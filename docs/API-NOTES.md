@@ -378,6 +378,19 @@ die Beschriftungen in Detail-, Edit- und List-View. Zu beachten: Optionswerte
 können Leerzeichen und Umlaute enthalten (`"nicht geprüft"`), taugen also nicht
 als Objektschlüssel-Annahme „slug-artig".
 
+⚠️ **Standardfelder sind nur global übersetzt.** `modifiedAt`, `createdAt`,
+`assignedUser` & Co. fehlen unter `{Entity}.fields` und stehen stattdessen in
+`Global.fields.{field}` (`modifiedAt` → „Geändert am"). Die Label-Kette muss
+deshalb lauten:
+
+```
+{Entity}.fields.{field}  →  Global.fields.{field}  →  Feldname
+```
+
+Ohne den mittleren Schritt erscheinen genau die Spalten technisch, die in
+Listenansichten am häufigsten vorkommen. Analog für Optionen:
+`{Entity}.options.{field}` → `Global.options.{field}` → Rohwert.
+
 I18n-Scopes umfassen u. a. `Global`, `User`, `Preferences`, `Stream`,
 `CLieferscheine`, `CPruefberichte` — Labels also pro Entität abrufbar.
 Fallback-Kette für die Engine: `{Entity}.options.{field}` → `Global.options.{field}` → Rohwert.

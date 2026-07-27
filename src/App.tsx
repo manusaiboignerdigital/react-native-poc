@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useApp } from './store';
 import { SetupPage } from './pages/SetupPage';
 import { HomePage } from './pages/HomePage';
+import { ListPage } from './pages/ListPage';
+import { RecordPage } from './pages/RecordPage';
 
 export function App() {
   const status = useApp((s) => s.status);
@@ -10,6 +12,7 @@ export function App() {
   const init = useApp((s) => s.init);
   const setOnline = useApp((s) => s.setOnline);
   const refresh = useApp((s) => s.refresh);
+  const view = useApp((s) => s.view);
 
   useEffect(() => {
     void init();
@@ -38,7 +41,20 @@ export function App() {
       {status === 'starting' && <p className="center muted">Starte …</p>}
       {status === 'booting' && <p className="center muted">Lade Metadaten …</p>}
       {status === 'setup' && <SetupPage />}
-      {status === 'ready' && <HomePage />}
+      {status === 'ready' && (
+        <>
+          {view.name === 'home' && <HomePage />}
+          {view.name === 'list' && <ListPage entityType={view.entityType} />}
+          {(view.name === 'detail' || view.name === 'edit') && (
+            <RecordPage
+              key={`${view.entityType}:${view.id}`}
+              entityType={view.entityType}
+              id={view.id}
+              mode={view.name}
+            />
+          )}
+        </>
+      )}
       {status === 'error' && (
         <main className="card">
           <h2>Start nicht möglich</h2>

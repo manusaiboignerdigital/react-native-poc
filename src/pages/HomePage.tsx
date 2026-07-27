@@ -19,6 +19,7 @@ export function HomePage() {
   const refresh = useApp((s) => s.refresh);
   const logout = useApp((s) => s.logout);
   const status = useApp((s) => s.status);
+  const navigate = useApp((s) => s.navigate);
 
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [cachedKeys, setCachedKeys] = useState<string[]>([]);
@@ -81,7 +82,13 @@ export function HomePage() {
               return (
                 <tr key={entityType}>
                   <td>
-                    <strong>{entityLabel(data, entityType)}</strong>
+                    <button
+                      type="button"
+                      className="link-btn"
+                      onClick={() => navigate({ name: 'list', entityType })}
+                    >
+                      <strong>{entityLabel(data, entityType)}</strong>
+                    </button>
                     <br />
                     <code>{entityType}</code>
                   </td>

@@ -4,18 +4,27 @@ import { loadConfig, saveConfig, wipeLocalData, type AppConfig } from './db/repo
 
 type Status = 'starting' | 'setup' | 'booting' | 'ready' | 'error';
 
+/** Schlichtes Routing ohne Router-Bibliothek: Liste → Detail → Bearbeiten. */
+export type View =
+  | { name: 'home' }
+  | { name: 'list'; entityType: string }
+  | { name: 'detail'; entityType: string; id: string }
+  | { name: 'edit'; entityType: string; id: string };
+
 interface AppState {
   status: Status;
   config: AppConfig | null;
   data: BootData | null;
   error: string | null;
   online: boolean;
+  view: View;
 
   init: () => Promise<void>;
   connect: (config: AppConfig) => Promise<void>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
   setOnline: (online: boolean) => void;
+  navigate: (view: View) => void;
 }
 
 export const useApp = create<AppState>((set, get) => ({
@@ -24,6 +33,7 @@ export const useApp = create<AppState>((set, get) => ({
   data: null,
   error: null,
   online: navigator.onLine,
+  view: { name: 'home' },
 
   /** Beim App-Start: gespeicherte Konfiguration suchen und booten. */
   async init() {
@@ -66,10 +76,14 @@ export const useApp = create<AppState>((set, get) => ({
 
   async logout() {
     await wipeLocalData();
-    set({ status: 'setup', config: null, data: null, error: null });
+    set({ status: 'setup', config: null, data: null, error: null, view: { name: 'home' } });
   },
 
   setOnline(online) {
     set({ online });
+  },
+
+  navigate(view) {
+    set({ view });
   },
 }));
