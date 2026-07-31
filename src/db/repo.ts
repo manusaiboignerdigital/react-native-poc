@@ -89,6 +89,43 @@ export function listRecords(entityType: string, limit = 50) {
   return db.records.where('entityType').equals(entityType).limit(limit).toArray();
 }
 
+/**
+ * Namenssuche im lokalen Bestand — Grundlage der link-Auswahl im EditView.
+ * Bewusst clientseitig: die Auswahl muss offline genauso funktionieren.
+ */
+export async function searchRecords(
+  entityType: string,
+  query: string,
+  limit = 20,
+): Promise<{ id: string; name: string }[]> {
+  const needle = query.trim().toLowerCase();
+  const hits: { id: string; name: string }[] = [];
+
+  await db.records
+    .where('entityType')
+    .equals(entityType)
+    .until(() => hits.length >= limit)
+    .each((row) => {
+      const name = String(row.data.name ?? '');
+      if (!needle || name.toLowerCase().includes(needle)) {
+        hits.push({ id: row.id, name });
+      }
+    });
+
+  return hits.slice(0, limit);
+}
+
+/** Schreibt einen Datensatz lokal zurück (optimistisch). */
+export async function putRecord(entityType: string, data: Record<string, unknown>) {
+  await db.records.put({
+    entityType,
+    id: String(data.id),
+    data,
+    modifiedAt: (data.modifiedAt as string | null) ?? null,
+    versionNumber: (data.versionNumber as number | undefined) ?? null,
+  });
+}
+
 // --- Outbox (ab Phase 5 befüllt) ---
 
 export function countPendingOutbox() {

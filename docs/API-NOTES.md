@@ -173,6 +173,19 @@ Beachtenswert: `has` operiert auf einem **`checklist`**-Feld — der Evaluator m
 Array-Werte verstehen, und der `checklist`-Renderer aus Phase 2 liefert die
 Datengrundlage dafür.
 
+**Form der Bedingungen** (aus den Fixtures abgelesen, maßgeblich für den Evaluator):
+
+- `conditionGroup` ist **immer ein Array**; die Elemente sind UND-verknüpft.
+- Vergleiche tragen `attribute` und meist `value`; `and`/`or` tragen unter
+  `value` eine verschachtelte Liste.
+- Manche Bedingungen tragen zusätzlich `data.field`. Das benennt nur das
+  **UI-Feld**, zu dem das Attribut gehört (z. B. `attribute:
+  "cKundenbaustelleId"` → `data.field: "cKundenbaustelle"`), damit der Client
+  weiß, welches Formularfeld er beobachten muss. Für die Auswertung ist allein
+  `attribute` maßgeblich — `data` darf ignoriert werden.
+- Vergleiche greifen auf **Attribute**, nicht auf Feldnamen: Beziehungen werden
+  über `{link}Id` geprüft, nicht über `{link}`.
+
 ## A9 — Optimistic Concurrency ✅ **vollständig bestätigt**
 
 Nachgewiesen im Lauf vom 21:12 UTC:
@@ -377,6 +390,19 @@ Beispiele aus dem Fixture:
 die Beschriftungen in Detail-, Edit- und List-View. Zu beachten: Optionswerte
 können Leerzeichen und Umlaute enthalten (`"nicht geprüft"`), taugen also nicht
 als Objektschlüssel-Annahme „slug-artig".
+
+⚠️ **Standardfelder sind nur global übersetzt.** `modifiedAt`, `createdAt`,
+`assignedUser` & Co. fehlen unter `{Entity}.fields` und stehen stattdessen in
+`Global.fields.{field}` (`modifiedAt` → „Geändert am"). Die Label-Kette muss
+deshalb lauten:
+
+```
+{Entity}.fields.{field}  →  Global.fields.{field}  →  Feldname
+```
+
+Ohne den mittleren Schritt erscheinen genau die Spalten technisch, die in
+Listenansichten am häufigsten vorkommen. Analog für Optionen:
+`{Entity}.options.{field}` → `Global.options.{field}` → Rohwert.
 
 I18n-Scopes umfassen u. a. `Global`, `User`, `Preferences`, `Stream`,
 `CLieferscheine`, `CPruefberichte` — Labels also pro Entität abrufbar.
